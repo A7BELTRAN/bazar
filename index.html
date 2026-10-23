@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu bazar culiacán</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        terracota: {
+                            50: '#fdf8f6',
+                            100: '#fbe8e4',
+                            500: '#c86d51',
+                            600: '#b0573b',
+                            700: '#92452e',
+                        },
+                        arena: {
+                            100: '#f4f1ea',
+                            200: '#e6dfd1',
+                            800: '#5a5344'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-12">
+
+    <!-- Encabezado -->
+    <header class="bg-terracota-600 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-6 text-center">
+            <h1 class="text-3xl font-bold tracking-wide">Tu bazar culiacán</h1>
+            <p class="text-terracota-100 text-sm mt-1">Control de inventario, ventas y finanzas</p>
+            
+            <!-- Botones de Respaldo y Carga -->
+            <div class="flex justify-center gap-3 mt-4">
+                <button type="button" onclick="exportarDatos()" class="bg-terracota-700 hover:bg-terracota-800 text-white text-xs font-medium px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+                    💾 Guardar Archivo
+                </button>
+                <label class="bg-arena-100 hover:bg-white text-arena-800 text-xs font-medium px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5 cursor-pointer">
+                    📂 Cargar Archivo
+                    <input type="file" id="inputFile" accept=".json" onchange="importarDatos(event)" class="hidden">
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 mt-6 space-y-6">
+
+        <!-- Panel Financiero -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-arena-200">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Inversión Total (Palets + Gastos)</p>
+                <div class="flex items-center justify-between mt-1">
+                    <p id="totalInversion" class="text-2xl font-bold text-gray-800">$0.00</p>
+                    <button type="button" onclick="abrirModalGastos()" class="bg-terracota-100 hover:bg-terracota-500 hover:text-white text-terracota-700 text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1">
+                        ➕ Registrar Gasto
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-arena-200">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ingresos Totales</p>
+                <p id="totalIngresos" class="text-2xl font-bold text-terracota-600 mt-1">$0.00</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-arena-200">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ganancia Neta</p>
+                <p id="totalGanancias" class="text-2xl font-bold text-green-600 mt-1">$0.00</p>
+            </div>
+        </section>
+
+        <!-- Formulario para Agregar / Editar Artículo -->
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-arena-200">
+            <h2 id="formTitulo" class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>📦</span> Agregar Artículo al Inventario
+            </h2>
+            <input type="hidden" id="editandoId" value="">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Código del Artículo</label>
+                    <input type="text" id="inputCodigo" placeholder="Ej. P1-01" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Nombre / Descripción del Artículo</label>
+                    <input type="text" id="inputNombre" placeholder="Ej. Camisa vintage Levi's" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Categoría</label>
+                    <input type="text" id="inputCategoria" placeholder="Ej. Ropa, Calzado" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Costo en Tienda ($)</label>
+                    <input type="number" step="0.01" id="inputCosto" placeholder="0.00" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Precio de Venta ($)</label>
+                    <input type="number" step="0.01" id="inputVenta" placeholder="0.00" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div class="sm:col-span-3 flex gap-2">
+                    <button type="button" id="btnCancelarEdicion" onclick="cancelarEdicion()" class="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition text-sm hidden">
+                        Cancelar
+                    </button>
+                    <button type="button" id="btnGuardar" onclick="guardarProducto()" class="w-full bg-terracota-600 hover:bg-terracota-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-sm shadow-sm">
+                        Guardar en Inventario
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recuadro Único de Inventario y Vendidos -->
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-arena-200">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                <h2 id="tituloSeccion" class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span>📋</span> Inventario Disponible
+                </h2>
+                <!-- Botón de cambio de vista -->
+                <div class="bg-arena-100 p-1 rounded-lg flex gap-1 w-full sm:w-auto">
+                    <button type="button" id="tabDisponible" onclick="cambiarVista('disponible')" class="flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition bg-terracota-600 text-white shadow-sm">
+                        Disponibles
+                    </button>
+                    <button type="button" id="tabVendidos" onclick="cambiarVista('vendidos')" class="flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition text-gray-600 hover:text-gray-800">
+                        Vendidos
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="border-b border-arena-200 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="py-3 px-2">Código</th>
+                            <th class="py-3 px-2">Artículo</th>
+                            <th class="py-3 px-2">Cat.</th>
+                            <th class="py-3 px-2">Costo</th>
+                            <th class="py-3 px-2">Venta</th>
+                            <th class="py-3 px-2 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody" class="divide-y divide-arena-100">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="text-center py-8 text-gray-400 text-sm hidden">
+                    No hay artículos en esta sección.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal para Registrar Gastos -->
+    <div id="modalGastos" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-arena-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Registrar Gasto de Palet / Flete</h3>
+                <button type="button" onclick="cerrarModalGastos()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">✕</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Descripción (Ej. Palet #1, Gasolina)</label>
+                    <input type="text" id="gastoNombre" placeholder="Nombre del gasto" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Tipo de Gasto</label>
+                    <select id="gastoTipo" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm bg-white">
+                        <option value="Palet">Precio Palet / Lote</option>
+                        <option value="Flete">Flete / Transporte</option>
+                        <option value="Gasolina">Gasolina / Extras</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Monto ($)</label>
+                    <input type="number" step="0.01" id="gastoMonto" placeholder="0.00" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="cerrarModalGastos()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition text-sm">Cancelar</button>
+                    <button type="button" onclick="agregarGasto()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-medium py-2 px-4 rounded-lg transition text-sm shadow-sm">Guardar</button>
+                </div>
+            </div>
+
+            <div class="mt-6 border-t border-arena-200 pt-4">
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Gastos Registrados</h4>
+                <div id="listaGastos" class="max-h-36 overflow-y-auto space-y-2 text-sm">
+                    <!-- Historial de gastos -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lógica de la aplicación con respaldo y carga de archivos -->
+    <script>
+        let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
+        let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
+        let vistaActual = 'disponible';
+
+        const inventoryTableBody = document.getElementById('inventoryTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const tituloSeccion = document.getElementById('tituloSeccion');
+        const tabDisponible = document.getElementById('tabDisponible');
+        const tabVendidos = document.getElementById('tabVendidos');
+        
+        const totalInversionEl = document.getElementById('totalInversion');
+        const totalIngresosEl = document.getElementById('totalIngresos');
+        const totalGananciasEl = document.getElementById('totalGanancias');
+        
+        const modalGastos = document.getElementById('modalGastos');
+        const listaGastos = document.getElementById('listaGastos');
+        
+        const formTitulo = document.getElementById('formTitulo');
+        const editandoIdEl = document.getElementById('editandoId');
+        const btnCancelarEdicion = document.getElementById('btnCancelarEdicion');
+        const btnGuardar = document.getElementById('btnGuardar');
+
+        // Funciones de Respaldo y Restauración
+        function exportarDatos() {
+            const datos = {
+                productos: productos,
+                gastos: gastos
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datos, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "tu_bazar_culiacan_respaldo.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importarDatos(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const contenido = JSON.parse(e.target.result);
+                    if (contenido.productos && contenido.gastos) {
+                        if (confirm("¿Estás seguro de cargar este archivo? Se reemplazarán los datos actuales en este dispositivo.")) {
+                            productos = contenido.productos;
+                            gastos = contenido.gastos;
+                            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+                            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+                            renderizar();
+                            alert("¡Datos cargados y recuperados con éxito!");
+                        }
+                    } else {
+                        alert("El archivo no tiene el formato correcto de respaldo.");
+                    }
+                } catch (error) {
+                    alert("Error al leer el archivo JSON.");
+                }
+                event.target.value = ''; // Limpiar input file
+            };
+            reader.readAsText(file);
+        }
+
+        function cambiarVista(vista) {
+            vistaActual = vista;
+            if (vista === 'disponible') {
+                tabDisponible.className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition bg-terracota-600 text-white shadow-sm";
+                tabVendidos.className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition text-gray-600 hover:text-gray-800";
+                tituloSeccion.innerHTML = `<span>📋</span> Inventario Disponible`;
+            } else {
+                tabVendidos.className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition bg-terracota-600 text-white shadow-sm";
+                tabDisponible.className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition text-gray-600 hover:text-gray-800";
+                tituloSeccion.innerHTML = `<span>✅</span> Artículos Vendidos`;
+            }
+            renderizar();
+        }
+
+        function abrirModalGastos() {
+            modalGastos.classList.remove('hidden');
+            renderizarGastos();
+        }
+
+        function cerrarModalGastos() {
+            modalGastos.classList.add('hidden');
+        }
+
+        function agregarGasto() {
+            const nombre = document.getElementById('gastoNombre').value.trim();
+            const tipo = document.getElementById('gastoTipo').value;
+            const monto = parseFloat(document.getElementById('gastoMonto').value) || 0;
+
+            if (!nombre || monto <= 0) {
+                alert("Por favor ingresa un nombre y un monto válido.");
+                return;
+            }
+
+            gastos.push({ id: Date.now(), nombre, tipo, monto });
+            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+            
+            document.getElementById('gastoNombre').value = '';
+            document.getElementById('gastoMonto').value = '';
+            
+            renderizarGastos();
+            actualizarFinanzas();
+        }
+
+        function eliminarGasto(id) {
+            if (confirm("¿Eliminar este gasto?")) {
+                gastos = gastos.filter(g => g.id !== id);
+                localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+                renderizarGastos();
+                actualizarFinanzas();
+            }
+        }
+
+        function renderizarGastos() {
+            if (gastos.length === 0) {
+                listaGastos.innerHTML = '<p class="text-gray-400 text-xs text-center py-2">No hay gastos registrados.</p>';
+                return;
+            }
+            let html = '';
+            gastos.forEach(g => {
+                html += `
+                    <div class="flex justify-between items-center bg-arena-50 p-2 rounded border border-arena-200 text-xs">
+                        <div>
+                            <span class="font-bold text-gray-800">${g.nombre}</span>
+                            <span class="text-terracota-600 block">(${g.tipo})</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-gray-700">$${g.monto.toFixed(2)}</span>
+                            <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-500 font-bold px-1">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+            listaGastos.innerHTML = html;
+        }
+
+        function guardarProducto() {
+            const codigo = document.getElementById('inputCodigo').value.trim();
+            const nombre = document.getElementById('inputNombre').value.trim();
+            const categoria = document.getElementById('inputCategoria').value.trim() || 'General';
+            const costo = parseFloat(document.getElementById('inputCosto').value) || 0;
+            const precioVenta = parseFloat(document.getElementById('inputVenta').value) || 0;
+            const idEdicion = editandoIdEl.value;
+
+            if (!codigo || !nombre) {
+                alert("Por favor ingresa al menos el código y el nombre del artículo.");
+                return;
+            }
+
+            if (idEdicion) {
+                productos = productos.map(p => {
+                    if (p.id == idEdicion) {
+                        p.codigo = codigo;
+                        p.nombre = nombre;
+                        p.categoria = categoria;
+                        p.costo = costo;
+                        p.precioVenta = precioVenta;
+                    }
+                    return p;
+                });
+                cancelarEdicion();
+            } else {
+                const nuevoProducto = {
+                    id: Date.now(),
+                    codigo,
+                    nombre,
+                    categoria,
+                    costo,
+                    precioVenta,
+                    estado: 'Disponible'
+                };
+                productos.push(nuevoProducto);
+                limpiarFormulario();
+            }
+
+            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            renderizar();
+        }
+
+        function prepararEdicion(id) {
+            const p = productos.find(item => item.id == id);
+            if (!p) return;
+
+            document.getElementById('inputCodigo').value = p.codigo;
+            document.getElementById('inputNombre').value = p.nombre;
+            document.getElementById('inputCategoria').value = p.categoria;
+            document.getElementById('inputCosto').value = p.costo;
+            document.getElementById('inputVenta').value = p.precioVenta;
+            
+            editandoIdEl.value = p.id;
+            formTitulo.innerHTML = `<span>✏️</span> Editando Artículo: <span class="text-terracota-600">${p.codigo}</span>`;
+            btnGuardar.textContent = "Actualizar Artículo";
+            btnGuardar.className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-sm shadow-sm";
+            btnCancelarEdicion.classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicion() {
+            limpiarFormulario();
+            editandoIdEl.value = "";
+            formTitulo.innerHTML = `<span>📦</span> Agregar Artículo al Inventario`;
+            btnGuardar.textContent = "Guardar en Inventario";
+            btnGuardar.className = "w-full bg-terracota-600 hover:bg-terracota-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-sm shadow-sm";
+            btnCancelarEdicion.classList.add('hidden');
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('inputCodigo').value = '';
+            document.getElementById('inputNombre').value = '';
+            document.getElementById('inputCategoria').value = '';
+            document.getElementById('inputCosto').value = '';
+            document.getElementById('inputVenta').value = '';
+        }
+
+        function cambiarEstado(id) {
+            productos = productos.map(p => {
+                if (p.id === id) {
+                    p.estado = p.estado === 'Disponible' ? 'Vendido' : 'Disponible';
+                }
+                return p;
+            });
+            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            renderizar();
+        }
+
+        function eliminarProducto(id) {
+            if (confirm("¿Eliminar este artículo?")) {
+                productos = productos.filter(p => p.id !== id);
+                localStorage.setItem('bazar_productos', JSON.stringify(productos));
+                renderizar();
+            }
+        }
+
+        function actualizarFinanzas() {
+            let totalInversionGastos = gastos.reduce((acc, g) => acc + g.monto, 0);
+            let ingresosTotales = productos.filter(p => p.estado === 'Vendido').reduce((acc, p) => acc + p.precioVenta, 0);
+            let gananciaNeta = ingresosTotales - totalInversionGastos;
+
+            totalInversionEl.textContent = `$${totalInversionGastos.toFixed(2)}`;
+            totalIngresosEl.textContent = `$${ingresosTotales.toFixed(2)}`;
+            totalGananciasEl.textContent = `$${gananciaNeta.toFixed(2)}`;
+            totalGananciasEl.className = `text-2xl font-bold mt-1 ${gananciaNeta >= 0 ? 'text-green-600' : 'text-red-600'}`;
+        }
+
+        function renderizar() {
+            const listaFiltrada = productos.filter(p => vistaActual === 'disponible' ? p.estado === 'Disponible' : p.estado === 'Vendido');
+
+            if (listaFiltrada.length === 0) {
+                emptyState.classList.remove('hidden');
+                inventoryTableBody.innerHTML = '';
+            } else {
+                emptyState.classList.add('hidden');
+                let rowsHtml = '';
+                listaFiltrada.forEach(p => {
+                    if (vistaActual === 'disponible') {
+                        rowsHtml += `
+                            <tr class="hover:bg-arena-50 transition">
+                                <td class="py-3 px-2 font-bold text-terracota-700">${p.codigo}</td>
+                                <td class="py-3 px-2 font-medium text-gray-800">${p.nombre}</td>
+                                <td class="py-3 px-2 text-gray-600">${p.categoria}</td>
+                                <td class="py-3 px-2 text-gray-600">$${p.costo.toFixed(2)}</td>
+                                <td class="py-3 px-2 text-gray-600">$${p.precioVenta.toFixed(2)}</td>
+                                <td class="py-3 px-2 text-right">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-2.5 py-1 rounded font-medium">
+                                            Vender
+                                        </button>
+                                        <button type="button" onclick="prepararEdicion(${p.id})" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium">
+                                            ✏️
+                                        </button>
+                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        rowsHtml += `
+                            <tr class="hover:bg-arena-50 transition">
+                                <td class="py-3 px-2 font-bold text-terracota-700">${p.codigo}</td>
+                                <td class="py-3 px-2 font-medium text-gray-800">${p.nombre}</td>
+                                <td class="py-3 px-2 text-gray-600">${p.categoria}</td>
+                                <td class="py-3 px-2 text-gray-600">$${p.costo.toFixed(2)}</td>
+                                <td class="py-3 px-2 font-bold text-green-600">$${p.precioVenta.toFixed(2)}</td>
+                                <td class="py-3 px-2 text-right">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded font-medium">
+                                            Devolver
+                                        </button>
+                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+                inventoryTableBody.innerHTML = rowsHtml;
+            }
+            actualizarFinanzas();
+        }
+
+        renderizar();
+    </script>
+</body>
+</html>
