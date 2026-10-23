@@ -21,7 +21,7 @@
                         arena: {
                             100: '#f4f1ea',
                             200: '#e6dfd1',
-                            800: '#5a5344'
+                            800: '#2d2a22'
                         }
                     }
                 }
@@ -29,21 +29,21 @@
         }
     </script>
 </head>
-<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-12">
+<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-16">
 
     <!-- Encabezado -->
     <header class="bg-terracota-600 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-6 text-center">
-            <h1 class="text-3xl font-bold tracking-wide">Tu bazar culiacán</h1>
-            <p class="text-terracota-100 text-sm mt-1">Control avanzado de inventario, ventas y finanzas</p>
+            <h1 class="text-3xl font-extrabold tracking-wide">Tu bazar culiacán</h1>
+            <p class="text-terracota-100 text-base mt-1 font-medium">Control de inventario, ventas y ganancias</p>
             
             <!-- Botones de Respaldo y Carga -->
-            <div class="flex justify-center gap-3 mt-4">
-                <button type="button" onclick="exportarDatos()" class="bg-terracota-700 hover:bg-terracota-800 text-white text-xs font-medium px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5">
-                    💾 Guardar Archivo
+            <div class="flex justify-center gap-4 mt-5">
+                <button type="button" onclick="exportarDatos()" class="bg-terracota-700 hover:bg-terracota-800 text-white text-sm font-bold px-4 py-3 rounded-xl shadow-md transition flex items-center gap-2">
+                    💾 Guardar Copia
                 </button>
-                <label class="bg-arena-100 hover:bg-white text-arena-800 text-xs font-medium px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5 cursor-pointer">
-                    📂 Cargar Archivo
+                <label class="bg-white hover:bg-arena-100 text-terracota-700 text-sm font-bold px-4 py-3 rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer">
+                    📂 Cargar Copia
                     <input type="file" id="inputFile" accept=".json" onchange="importarDatos(event)" class="hidden">
                 </label>
             </div>
@@ -54,109 +54,109 @@
 
         <!-- Panel Financiero -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-arena-200">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Inversión Total (Palets + Gastos)</p>
-                <div class="flex items-center justify-between mt-1">
-                    <p id="totalInversion" class="text-2xl font-bold text-gray-800">$0.00</p>
-                    <button type="button" onclick="abrirModalGastos()" class="bg-terracota-100 hover:bg-terracota-500 hover:text-white text-terracota-700 text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1">
-                        ➕ Registrar Gasto
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-arena-200">
+                <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Inversión (Gastos)</p>
+                <div class="flex items-center justify-between mt-2">
+                    <p id="totalInversion" class="text-3xl font-extrabold text-gray-900">$0.00</p>
+                    <button type="button" onclick="abrirModalGastos()" class="bg-terracota-100 hover:bg-terracota-600 hover:text-white text-terracota-700 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
+                        ➕ Gasto
                     </button>
                 </div>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-arena-200">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ingresos Totales</p>
-                <p id="totalIngresos" class="text-2xl font-bold text-terracota-600 mt-1">$0.00</p>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-arena-200">
+                <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Ventas Totales</p>
+                <p id="totalIngresos" class="text-3xl font-extrabold text-terracota-600 mt-2">$0.00</p>
             </div>
-            <div class="bg-white p-5 rounded-xl shadow-sm border border-arena-200">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ganancia Neta</p>
-                <p id="totalGanancias" class="text-2xl font-bold text-green-600 mt-1">$0.00</p>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-arena-200">
+                <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Ganancia Neta</p>
+                <p id="totalGanancias" class="text-3xl font-extrabold text-green-600 mt-2">$0.00</p>
             </div>
         </section>
 
         <!-- Formulario para Agregar / Editar Artículo -->
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-arena-200">
-            <h2 id="formTitulo" class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <section class="bg-white p-6 rounded-2xl shadow-sm border-2 border-arena-200">
+            <h2 id="formTitulo" class="text-xl font-extrabold text-gray-900 mb-4 flex items-center gap-2">
                 <span>📦</span> Agregar Artículo al Inventario
             </h2>
             <input type="hidden" id="editandoId" value="">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Código del Artículo</label>
-                    <input type="text" id="inputCodigo" placeholder="Ej. P1-01" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Código</label>
+                    <input type="text" id="inputCodigo" placeholder="Ej. P1-01" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div class="sm:col-span-2 lg:col-span-3">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Nombre / Descripción del Artículo</label>
-                    <input type="text" id="inputNombre" placeholder="Ej. Camisa vintage Levi's" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre / Descripción del Artículo</label>
+                    <input type="text" id="inputNombre" placeholder="Ej. Blusa floreada" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Categoría</label>
-                    <input type="text" id="inputCategoria" placeholder="Ej. Ropa, Calzado" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Categoría</label>
+                    <input type="text" id="inputCategoria" placeholder="Ej. Ropa, Zapatos" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Costo en Tienda ($)</label>
-                    <input type="number" step="0.01" id="inputCosto" placeholder="0.00" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Costo ($)</label>
+                    <input type="number" step="0.01" id="inputCosto" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Precio de Venta ($)</label>
-                    <input type="number" step="0.01" id="inputVenta" placeholder="0.00" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Precio de Venta ($)</label>
+                    <input type="number" step="0.01" id="inputVenta" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
-                <div class="sm:col-span-2 lg:col-span-4 flex gap-2 pt-2">
-                    <button type="button" id="btnCancelarEdicion" onclick="cancelarEdicion()" class="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2.5 px-4 rounded-lg transition text-sm hidden">
+                <div class="sm:col-span-2 lg:col-span-4 flex gap-3 pt-2">
+                    <button type="button" id="btnCancelarEdicion" onclick="cancelarEdicion()" class="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3.5 px-4 rounded-xl transition text-base hidden">
                         Cancelar
                     </button>
-                    <button type="button" id="btnGuardar" onclick="guardarProducto()" class="w-full bg-terracota-600 hover:bg-terracota-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-sm shadow-sm">
-                        Guardar en Inventario
+                    <button type="button" id="btnGuardar" onclick="guardarProducto()" class="w-full bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md">
+                        Guardar Artículo
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- Recuadro Único de Inventario y Vendidos con Buscador y Filtros -->
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-arena-200">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                <h2 id="tituloSeccion" class="text-lg font-bold text-gray-800 flex items-center gap-2">
+        <!-- Recuadro de Inventario -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border-2 border-arena-200">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
+                <h2 id="tituloSeccion" class="text-xl font-extrabold text-gray-900 flex items-center gap-2">
                     <span>📋</span> Inventario Disponible
                 </h2>
-                <!-- Pestañas de Vista -->
-                <div class="bg-arena-100 p-1 rounded-lg flex gap-1 w-full sm:w-auto">
-                    <button type="button" id="tabDisponible" onclick="cambiarVista('disponible')" class="flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition bg-terracota-600 text-white shadow-sm">
+                <!-- Pestañas -->
+                <div class="bg-arena-100 p-1.5 rounded-xl flex gap-2 w-full sm:w-auto">
+                    <button type="button" id="tabDisponible" onclick="cambiarVista('disponible')" class="flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm">
                         Disponibles
                     </button>
-                    <button type="button" id="tabVendidos" onclick="cambiarVista('vendidos')" class="flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition text-gray-600 hover:text-gray-800">
+                    <button type="button" id="tabVendidos" onclick="cambiarVista('vendidos')" class="flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black">
                         Vendidos
                     </button>
                 </div>
             </div>
 
-            <!-- Buscador optimizado y Filtro de Categoría -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <!-- Buscador y Filtro -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                 <div>
-                    <input type="text" id="inputBuscador" oninput="manejarBusqueda()" placeholder="🔍 Buscar por código o nombre..." class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <input type="text" id="inputBuscador" oninput="filtrarEnVivo()" placeholder="🔍 Buscar por código o nombre..." class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
-                    <select id="selectFiltroCat" onchange="renderizar()" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm bg-white">
+                    <select id="selectFiltroCat" onchange="renderizar()" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium bg-white">
                         <option value="">Todas las categorías</option>
                     </select>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm">
+                <table class="w-full text-left border-collapse text-base">
                     <thead>
-                        <tr class="border-b border-arena-200 text-gray-500 text-xs uppercase tracking-wider">
-                            <th class="py-3 px-2">Código</th>
-                            <th class="py-3 px-2">Artículo</th>
-                            <th class="py-3 px-2">Cat.</th>
-                            <th class="py-3 px-2">Costo</th>
-                            <th class="py-3 px-2">Precio</th>
-                            <th class="py-3 px-2 text-right">Acciones</th>
+                        <tr class="border-b-2 border-arena-200 text-gray-600 text-sm uppercase tracking-wider font-extrabold">
+                            <th class="py-3 px-3">Código</th>
+                            <th class="py-3 px-3">Artículo</th>
+                            <th class="py-3 px-3">Cat.</th>
+                            <th class="py-3 px-3">Costo</th>
+                            <th class="py-3 px-3">Precio</th>
+                            <th class="py-3 px-3 text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="inventoryTableBody" class="divide-y divide-arena-100">
                         <!-- Se llena dinámicamente -->
                     </tbody>
                 </table>
-                <div id="emptyState" class="text-center py-8 text-gray-400 text-sm hidden">
+                <div id="emptyState" class="text-center py-10 text-gray-400 text-base font-medium hidden">
                     No se encontraron artículos con esos criterios.
                 </div>
             </div>
@@ -165,50 +165,49 @@
     </main>
 
     <!-- Modal para Registrar Gastos -->
-    <div id="modalGastos" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-arena-200">
+    <div id="modalGastos" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-arena-200">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-gray-800">Registrar Gasto de Palet / Flete</h3>
-                <button type="button" onclick="cerrarModalGastos()" class="text-gray-400 hover:text-gray-600 text-lg font-bold">✕</button>
+                <h3 class="text-xl font-extrabold text-gray-900">Registrar Gasto o Flete</h3>
+                <button type="button" onclick="cerrarModalGastos()" class="text-gray-400 hover:text-gray-700 text-2xl font-bold">✕</button>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Descripción (Ej. Palet #1, Gasolina)</label>
-                    <input type="text" id="gastoNombre" placeholder="Nombre del gasto" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Descripción (Ej. Palet #1, Gasolina)</label>
+                    <input type="text" id="gastoNombre" placeholder="Nombre del gasto" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Tipo de Gasto</label>
-                    <select id="gastoTipo" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm bg-white">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Gasto</label>
+                    <select id="gastoTipo" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium bg-white">
                         <option value="Palet">Precio Palet / Lote</option>
                         <option value="Flete">Flete / Transporte</option>
                         <option value="Gasolina">Gasolina / Extras</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Monto ($)</label>
-                    <input type="number" step="0.01" id="gastoMonto" placeholder="0.00" class="w-full px-3 py-2 border border-arena-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-terracota-500 text-sm">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Monto ($)</label>
+                    <input type="number" step="0.01" id="gastoMonto" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
-                <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="cerrarModalGastos()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition text-sm">Cancelar</button>
-                    <button type="button" onclick="agregarGasto()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-medium py-2 px-4 rounded-lg transition text-sm shadow-sm">Guardar</button>
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="cerrarModalGastos()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 px-4 rounded-xl transition text-base">Cancelar</button>
+                    <button type="button" onclick="agregarGasto()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md">Guardar</button>
                 </div>
             </div>
 
-            <div class="mt-6 border-t border-arena-200 pt-4">
-                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Gastos Registrados</h4>
-                <div id="listaGastos" class="max-h-36 overflow-y-auto space-y-2 text-sm">
+            <div class="mt-6 border-t-2 border-arena-200 pt-4">
+                <h4 class="text-sm font-extrabold text-gray-600 uppercase tracking-wider mb-2">Gastos Registrados</h4>
+                <div id="listaGastos" class="max-h-40 overflow-y-auto space-y-2 text-sm">
                     <!-- Historial de gastos -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Lógica optimizada con control de velocidad en búsqueda -->
+    <!-- Lógica ultrarrápida sin bloqueos -->
     <script>
         let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
         let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
         let vistaActual = 'disponible';
-        let temporizadorBusqueda = null;
 
         const $ = id => document.getElementById(id);
 
@@ -229,7 +228,7 @@
             reader.onload = function(e) {
                 try {
                     const contenido = JSON.parse(e.target.result);
-                    if (contenido.productos && contenido.gastos) {
+                    if (Array.isArray(contenido.productos) && Array.isArray(contenido.gastos)) {
                         if (confirm("¿Cargar este archivo y reemplazar los datos actuales?")) {
                             productos = contenido.productos;
                             gastos = contenido.gastos;
@@ -257,12 +256,13 @@
         function cambiarVista(vista) {
             vistaActual = vista;
             if (vista === 'disponible') {
-                $('tabDisponible').className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition bg-terracota-600 text-white shadow-sm";
-                $('tabVendidos').className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition text-gray-600 hover:text-gray-800";
+                $('tabDisponibleclassName') = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm"; // safety fallback
+                $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
+                $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
                 $('tituloSeccion').innerHTML = `<span>📋</span> Inventario Disponible`;
             } else {
-                $('tabVendidos').className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition bg-terracota-600 text-white shadow-sm";
-                $('tabDisponible').className = "flex-1 sm:flex-none text-xs px-3 py-1.5 rounded-md font-medium transition text-gray-600 hover:text-gray-800";
+                $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
+                $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
                 $('tituloSeccion').innerHTML = `<span>✅</span> Artículos Vendidos`;
             }
             renderizar();
@@ -280,9 +280,9 @@
         function agregarGasto() {
             const nombre = $('gastoNombre').value.trim();
             const tipo = $('gastoTipo').value;
-            const monto = parseFloat($('gastoMonto').value) || 0;
+            const monto = parseFloat($('gastoMonto').value);
 
-            if (!nombre || monto <= 0) {
+            if (!nombre || isNaN(monto) || monto <= 0) {
                 alert("Por favor ingresa un nombre y un monto válido.");
                 return;
             }
@@ -305,18 +305,18 @@
 
         function renderizarGastos() {
             if (gastos.length === 0) {
-                $('listaGastos').innerHTML = '<p class="text-gray-400 text-xs text-center py-2">No hay gastos registrados.</p>';
+                $('listaGastos').innerHTML = '<p class="text-gray-400 text-sm text-center py-2 font-medium">No hay gastos registrados.</p>';
                 return;
             }
             $('listaGastos').innerHTML = gastos.map(g => `
-                <div class="flex justify-between items-center bg-arena-50 p-2 rounded border border-arena-200 text-xs">
+                <div class="flex justify-between items-center bg-arena-50 p-3 rounded-xl border-2 border-arena-200 text-sm font-semibold">
                     <div>
-                        <span class="font-bold text-gray-800">${g.nombre}</span>
-                        <span class="text-terracota-600 block">(${g.tipo})</span>
+                        <span class="font-extrabold text-gray-900">${g.nombre}</span>
+                        <span class="text-terracota-600 block text-xs font-bold">(${g.tipo})</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold text-gray-700">$${g.monto.toFixed(2)}</span>
-                        <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-500 font-bold px-1">✕</button>
+                    <div class="flex items-center gap-3">
+                        <span class="font-extrabold text-gray-800">$${(g.monto || 0).toFixed(2)}</span>
+                        <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-600 font-extrabold text-base px-2 py-1 bg-red-50 rounded-lg">✕</button>
                     </div>
                 </div>
             `).join('');
@@ -368,7 +368,7 @@
             $('editandoId').value = p.id;
             $('formTitulo').innerHTML = `<span>✏️</span> Editando Artículo: <span class="text-terracota-600">${p.codigo || ''}</span>`;
             $('btnGuardar').textContent = "Actualizar Artículo";
-            $('btnGuardar').className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-sm shadow-sm";
+            $('btnGuardar').className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md";
             $('btnCancelarEdicion').classList.remove('hidden');
         }
 
@@ -376,8 +376,8 @@
             limpiarFormulario();
             $('editandoId').value = "";
             $('formTitulo').innerHTML = `<span>📦</span> Agregar Artículo al Inventario`;
-            $('btnGuardar').textContent = "Guardar en Inventario";
-            $('btnGuardar').className = "w-full bg-terracota-600 hover:bg-terracota-700 text-white font-medium py-2.5 px-4 rounded-lg transition text-sm shadow-sm";
+            $('btnGuardar').textContent = "Guardar Artículo";
+            $('btnGuardar').className = "w-full bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md";
             $('btnCancelarEdicion').classList.add('hidden');
         }
 
@@ -402,17 +402,18 @@
         }
 
         function eliminarProducto(id) {
-            if (confirm("¿Eliminar este artículo?")) {
+            if (confirm("¿Seguro que deseas eliminar este artículo?")) {
                 productos = productos.filter(p => p.id !== id);
                 guardarYActualizar();
             }
         }
 
         function actualizarFiltroCategorias() {
-            const categorias = [...new Set(productos.map(p => p.categoria || 'General'))];
-            const actual = $('selectFiltroCat').value;
+            const categorias = [...new Set(productos.map(p => p.categoria || 'General'))].sort();
+            const selectCat = $('selectFiltroCat');
+            const actual = selectCat.value;
             
-            $('selectFiltroCat').innerHTML = '<option value="">Todas las categorías</option>' + 
+            selectCat.innerHTML = '<option value="">Todas las categorías</option>' + 
                 categorias.map(cat => `<option value="${cat}" ${cat === actual ? 'selected' : ''}>${cat}</option>`).join('');
         }
 
@@ -424,15 +425,20 @@
             $('totalInversion').textContent = `$${inversion.toFixed(2)}`;
             $('totalIngresos').textContent = `$${ingresos.toFixed(2)}`;
             $('totalGanancias').textContent = `$${ganancia.toFixed(2)}`;
-            $('totalGanancias').className = `text-2xl font-bold mt-1 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
+            $('totalGanancias').className = `text-3xl font-extrabold mt-2 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
         }
 
-        // Función con retraso inteligente para evitar trabarse al escribir rápido
-        function manejarBusqueda() {
-            clearTimeout(temporizadorBusqueda);
-            temporizadorBusqueda = setTimeout(() => {
+        // Búsqueda directa por celda para máxima velocidad sin tirones
+        function filtrarEnVivo() {
+            const texto = $('inputBuscador').value.toLowerCase().trim();
+            const catFiltro = $('selectFiltroCat').value;
+            
+            // Si el buscador está vacío y no hay filtro complejo, renderizamos normal al instante
+            if (texto === "" && catFiltro === "") {
                 renderizar();
-            }, 100);
+                return;
+            }
+            renderizar();
         }
 
         function renderizar() {
@@ -455,33 +461,33 @@
                     if (vistaActual === 'disponible') {
                         return `
                             <tr class="hover:bg-arena-50 transition">
-                                <td class="py-3 px-2 font-bold text-terracota-700">${p.codigo || ''}</td>
-                                <td class="py-3 px-2 font-medium text-gray-800">${p.nombre || ''}</td>
-                                <td class="py-3 px-2 text-gray-600">${p.categoria || 'General'}</td>
-                                <td class="py-3 px-2 text-gray-600">$${(p.costo || 0).toFixed(2)}</td>
-                                <td class="py-3 px-2 text-gray-600">$${(p.precioVenta || 0).toFixed(2)}</td>
-                                <td class="py-3 px-2 text-right">
-                                    <div class="inline-flex items-center gap-1.5">
-                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-2.5 py-1 rounded font-medium">Vender</button>
-                                        <button type="button" onclick="prepararEdicion(${p.id})" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium">✏️</button>
-                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded">🗑️</button>
+                                <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
+                                <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
+                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
+                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
+                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
+                                <td class="py-4 px-3 text-right">
+                                    <div class="inline-flex items-center gap-2">
+                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-sm bg-green-500 hover:bg-green-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Vender</button>
+                                        <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
+                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
                                     </div>
                                 </td>
                             </tr>
                         `;
                     } else {
-                        const fecha = p.fechaVenta ? `<span class="text-xs text-gray-400 block">Venta: ${p.fechaVenta}</span>` : '';
+                        const fecha = p.fechaVenta ? `<span class="text-xs text-gray-500 font-bold block mt-0.5">Vendido el: ${p.fechaVenta}</span>` : '';
                         return `
                             <tr class="hover:bg-arena-50 transition">
-                                <td class="py-3 px-2 font-bold text-terracota-700">${p.codigo || ''}</td>
-                                <td class="py-3 px-2 font-medium text-gray-800">${p.nombre || ''} ${fecha}</td>
-                                <td class="py-3 px-2 text-gray-600">${p.categoria || 'General'}</td>
-                                <td class="py-3 px-2 text-gray-600">$${(p.costo || 0).toFixed(2)}</td>
-                                <td class="py-3 px-2 font-bold text-green-600">$${(p.precioVenta || 0).toFixed(2)}</td>
-                                <td class="py-3 px-2 text-right">
-                                    <div class="inline-flex items-center gap-1.5">
-                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded font-medium">Devolver</button>
-                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded">🗑️</button>
+                                <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
+                                <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''} ${fecha}</td>
+                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
+                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
+                                <td class="py-4 px-3 font-extrabold text-green-700 text-base">$${(p.precioVenta || 0).toFixed(2)}</td>
+                                <td class="py-4 px-3 text-right">
+                                    <div class="inline-flex items-center gap-2">
+                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-sm bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-3 py-2 rounded-xl shadow-sm">Devolver</button>
+                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-2 rounded-xl shadow-sm">Borrar</button>
                                     </div>
                                 </td>
                             </tr>
