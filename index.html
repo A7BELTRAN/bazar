@@ -627,7 +627,7 @@
             $('modalEtiquetasLote').classList.add('hidden');
         }
 
-        // --- Guardado Súper Ágil ---
+        // --- Guardado Rápido ---
         function guardarProducto() {
             const codigo = $('inputCodigo').value.trim();
             const nombre = $('inputNombre').value.trim();
@@ -790,10 +790,10 @@
                                 <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
                                 <td class="py-4 px-3 text-right">
                                     <div class="inline-flex items-center gap-1.5 justify-end">
-                                        <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
                                         <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
                                             ${seleccionadoCarrito ? '✓ Venta' : '🛒 Venta'}
                                         </button>
+                                        <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
                                         <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
                                     </div>
                                 </td>
