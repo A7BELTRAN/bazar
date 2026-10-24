@@ -29,7 +29,7 @@
         }
     </script>
 </head>
-<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-16">
+<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-32">
 
     <!-- Encabezado -->
     <header class="bg-terracota-600 text-white shadow-md">
@@ -150,7 +150,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-base">
                     <thead>
-                        <tr class="border-b-2 border-arena-200 text-gray-600 text-sm uppercase tracking-wider font-extrabold">
+                        <tr id="tableHeader" class="border-b-2 border-arena-200 text-gray-600 text-sm uppercase tracking-wider font-extrabold">
                             <th class="py-3 px-3">Código</th>
                             <th class="py-3 px-3">Artículo</th>
                             <th class="py-3 px-3">Cat.</th>
@@ -170,6 +170,24 @@
         </section>
 
     </main>
+
+    <!-- Carrito Flotante Fijo en la Base -->
+    <section id="panelCarrito" class="fixed bottom-0 left-0 right-0 bg-green-900 text-white p-4 shadow-2xl border-t-4 border-green-500 hidden z-40">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+                <span class="text-lg font-extrabold flex items-center gap-2">
+                    🛒 <span id="carritoCantidad">0</span> artículos seleccionados
+                </span>
+                <button type="button" onclick="vaciarCarrito()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition">Cancelar</button>
+            </div>
+            <div class="flex items-center gap-4 w-full sm:w-auto justify-between">
+                <p class="text-xl font-extrabold">Total: <span id="carritoTotal" class="text-green-300">$0.00</span></p>
+                <button type="button" onclick="procesarVentaMulti()" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-6 py-3 rounded-xl shadow-lg transition text-base">
+                    ✅ Cobrar y Ticket
+                </button>
+            </div>
+        </div>
+    </section>
 
     <!-- Modal para Registrar Gastos -->
     <div id="modalGastos" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
@@ -210,10 +228,27 @@
         </div>
     </div>
 
-    <!-- Lógica optimizada con contador de piezas -->
+    <!-- Modal Visualizador del Ticket -->
+    <div id="modalTicket" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-xl font-extrabold text-gray-900 mb-2">Comprobante de Venta</h3>
+            
+            <div id="contenidoTicketVisual" class="bg-arena-50 p-4 rounded-2xl border-2 border-dashed border-arena-200 text-left font-mono text-sm space-y-2 my-4 max-h-60 overflow-y-auto">
+                <!-- Se llena con los artículos de la venta -->
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3 px-4 rounded-xl transition text-base shadow-md">🖨️ Imprimir</button>
+                <button type="button" onclick="cerrarModalTicket()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-xl transition text-base">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lógica de la aplicación -->
     <script>
         let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
         let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
+        let carritoIds = [];
         let vistaActual = 'disponible';
 
         const $ = id => document.getElementById(id);
@@ -239,6 +274,7 @@
                         if (confirm("¿Cargar este archivo y reemplazar los datos actuales?")) {
                             productos = contenido.productos;
                             gastos = contenido.gastos;
+                            carritoIds = [];
                             guardarYActualizar();
                             alert("¡Datos cargados con éxito!");
                         }
@@ -262,6 +298,7 @@
 
         function cambiarVista(vista) {
             vistaActual = vista;
+            carritoIds = [];
             if (vista === 'disponible') {
                 $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
                 $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
@@ -271,6 +308,7 @@
                 $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
                 $('tituloSeccion').innerHTML = `<span>✅</span> Artículos Vendidos`;
             }
+            actualizarCarritoUI();
             renderizar();
         }
 
@@ -328,6 +366,109 @@
             `).join('');
         }
 
+        function toggleCarrito(id) {
+            if (carritoIds.includes(id)) {
+                carritoIds = carritoIds.filter(itemId => itemId !== id);
+            } else {
+                carritoIds.push(id);
+            }
+            actualizarCarritoUI();
+            renderizar();
+        }
+
+        function vaciarCarrito() {
+            carritoIds = [];
+            actualizarCarritoUI();
+            renderizar();
+        }
+
+        function actualizarCarritoUI() {
+            const panel = $('panelCarrito');
+            if (carritoIds.length === 0 || vistaActual !== 'disponible') {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            panel.classList.remove('hidden');
+            const itemsSeleccionados = productos.filter(p => carritoIds.includes(p.id));
+            let total = 0;
+            itemsSeleccionados.forEach(item => {
+                total += (item.precioVenta || 0);
+            });
+
+            $('carritoCantidad').textContent = carritoIds.length;
+            $('carritoTotal').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function procesarVentaMulti() {
+            if (carritoIds.length === 0) return;
+            const hoy = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const ventaId = 'V-' + Date.now();
+            
+            let itemsVendidos = [];
+            let totalVenta = 0;
+
+            productos = productos.map(p => {
+                if (carritoIds.includes(p.id)) {
+                    p.estado = 'Vendido';
+                    p.fechaVenta = hoy;
+                    p.ventaId = ventaId;
+                    itemsVendidos.push(p);
+                    totalVenta += (p.precioVenta || 0);
+                }
+                return p;
+            });
+
+            generarHtmlTicket(itemsVendidos, hoy, totalVenta);
+            $('modalTicket').classList.remove('hidden');
+
+            carritoIds = [];
+            guardarYActualizar();
+            actualizarCarritoUI();
+        }
+
+        function mostrarTicketPorVenta(ventaId) {
+            const itemsVenta = productos.filter(p => p.ventaId === ventaId);
+            if (itemsVenta.length === 0) return;
+
+            let totalVenta = itemsVenta.reduce((acc, p) => acc + (p.precioVenta || 0), 0);
+            let fecha = itemsVenta[0].fechaVenta || new Date().toLocaleDateString('es-MX');
+
+            generarHtmlTicket(itemsVenta, fecha, totalVenta);
+            $('modalTicket').classList.remove('hidden');
+        }
+
+        function mostrarTicketPorVentaSingle(id) {
+            const p = productos.find(item => item.id == id);
+            if (!p) return;
+            generarHtmlTicket([p], p.fechaVenta || new Date().toLocaleDateString('es-MX'), p.precioVenta || 0);
+            $('modalTicket').classList.remove('hidden');
+        }
+
+        function generarHtmlTicket(items, fecha, total) {
+            let detalleHtml = `
+                <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px;">TU BAZAR CULIACÁN</div>
+                <div style="text-align: center; font-size: 12px; margin-bottom: 8px;">Comprobante de Venta</div>
+                <div><b>Fecha:</b> ${fecha}</div>
+                <div style="border-top: 1px dashed #5a5344; margin: 6px 0;"></div>
+            `;
+
+            items.forEach(item => {
+                detalleHtml += `<div><b>[${item.codigo}]</b> ${item.nombre}<br><span style="float: right;">$${(item.precioVenta || 0).toFixed(2)}</span></div><div style="clear:both; margin-bottom: 4px;"></div>`;
+            });
+
+            detalleHtml += `
+                <div style="border-top: 2px dashed #5a5344; margin-top: 8px; padding-top: 6px; font-weight: bold; font-size: 16px; text-align: right;">TOTAL: $${total.toFixed(2)}</div>
+                <div style="text-align: center; font-size: 11px; margin-top: 10px;">¡Gracias por su compra!<br>Culiacán, Sinaloa</div>
+            `;
+
+            $('contenidoTicketVisual').innerHTML = detalleHtml;
+        }
+
+        function cerrarModalTicket() {
+            $('modalTicket').classList.add('hidden');
+        }
+
         function guardarProducto() {
             const codigo = $('inputCodigo').value.trim();
             const nombre = $('inputNombre').value.trim();
@@ -353,7 +494,8 @@
                     costo,
                     precioVenta,
                     estado: 'Disponible',
-                    fechaVenta: null
+                    fechaVenta: null,
+                    ventaId: null
                 });
                 limpiarFormulario();
             }
@@ -395,12 +537,13 @@
             $('inputVenta').value = '';
         }
 
-        function cambiarEstado(id) {
+        function cambiarEstadoIndividual(id) {
             const hoy = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
             productos = productos.map(p => {
                 if (p.id === id) {
                     p.estado = p.estado === 'Disponible' ? 'Vendido' : 'Disponible';
                     p.fechaVenta = p.estado === 'Vendido' ? hoy : null;
+                    if (p.estado === 'Disponible') p.ventaId = null;
                 }
                 return p;
             });
@@ -410,6 +553,7 @@
         function eliminarProducto(id) {
             if (confirm("¿Seguro que deseas eliminar este artículo?")) {
                 productos = productos.filter(p => p.id !== id);
+                carritoIds = carritoIds.filter(itemId => itemId !== id);
                 guardarYActualizar();
             }
         }
@@ -442,27 +586,34 @@
             const texto = $('inputBuscador').value.toLowerCase().trim();
             const catFiltro = $('selectFiltroCat').value;
 
-            const lista = productos.filter(p => {
-                const matchEstado = vistaActual === 'disponible' ? p.estado === 'Disponible' : p.estado === 'Vendido';
-                const matchTexto = (p.codigo || '').toLowerCase().includes(texto) || (p.nombre || '').toLowerCase().includes(texto);
-                const matchCat = catFiltro === "" || (p.categoria || 'General') === catFiltro;
-                return matchEstado && matchTexto && matchCat;
-            });
+            if (vistaActual === 'disponible') {
+                $('tableHeader').innerHTML = `
+                    <th class="py-3 px-3">Código</th>
+                    <th class="py-3 px-3">Artículo</th>
+                    <th class="py-3 px-3">Cat.</th>
+                    <th class="py-3 px-3">Costo</th>
+                    <th class="py-3 px-3">Precio</th>
+                    <th class="py-3 px-3 text-right">Acciones</th>
+                `;
 
-            // Actualizar el contador rápido de piezas en tiempo real
-            const totalMostrados = lista.length;
-            const textoPiezas = totalMostrados === 1 ? 'Mostrando 1 artículo' : `Mostrando ${totalMostrados} artículos`;
-            $('contadorPiezas').textContent = textoPiezas;
+                const lista = productos.filter(p => {
+                    const matchEstado = p.estado === 'Disponible';
+                    const matchTexto = (p.codigo || '').toLowerCase().includes(texto) || (p.nombre || '').toLowerCase().includes(texto);
+                    const matchCat = catFiltro === "" || (p.categoria || 'General') === catFiltro;
+                    return matchEstado && matchTexto && matchCat;
+                });
 
-            if (lista.length === 0) {
-                $('emptyState').classList.remove('hidden');
-                $('inventoryTableBody').innerHTML = '';
-            } else {
-                $('emptyState').classList.add('hidden');
-                $('inventoryTableBody').innerHTML = lista.map(p => {
-                    if (vistaActual === 'disponible') {
+                $('contadorPiezas').textContent = lista.length === 1 ? 'Mostrando 1 artículo' : `Mostrando ${lista.length} artículos`;
+
+                if (lista.length === 0) {
+                    $('emptyState').classList.remove('hidden');
+                    $('inventoryTableBody').innerHTML = '';
+                } else {
+                    $('emptyState').classList.add('hidden');
+                    $('inventoryTableBody').innerHTML = lista.map(p => {
+                        const seleccionado = carritoIds.includes(p.id);
                         return `
-                            <tr class="hover:bg-arena-50 transition">
+                            <tr class="hover:bg-arena-50 transition ${seleccionado ? 'bg-green-50/60' : ''}">
                                 <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
                                 <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
                                 <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
@@ -470,32 +621,85 @@
                                 <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
                                 <td class="py-4 px-3 text-right">
                                     <div class="inline-flex items-center gap-2">
-                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-sm bg-green-500 hover:bg-green-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Vender</button>
+                                        <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionado ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
+                                            ${seleccionado ? '✓ Seleccionado' : '🛒 Agregar'}
+                                        </button>
                                         <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
                                         <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
                                     </div>
                                 </td>
                             </tr>
                         `;
-                    } else {
-                        const fecha = p.fechaVenta ? `<span class="text-xs text-gray-500 font-bold block mt-0.5">Vendido el: ${p.fechaVenta}</span>` : '';
+                    }).join('');
+                }
+            } else {
+                // Vista de Vendidos con botones ordenados limpiamente
+                $('tableHeader').innerHTML = `
+                    <th class="py-3 px-3">Fecha / Venta</th>
+                    <th class="py-3 px-3">Artículos Vendidos</th>
+                    <th class="py-3 px-3">Total Venta</th>
+                    <th class="py-3 px-3 text-right">Opciones</th>
+                `;
+
+                const vendidos = productos.filter(p => p.estado === 'Vendido');
+                let gruposMap = {};
+                
+                vendidos.forEach(p => {
+                    let key = p.ventaId || ('single_' + p.id);
+                    if (!gruposMap[key]) {
+                        gruposMap[key] = { fecha: p.fechaVenta || 'Antiguo', items: [], total: 0, ventaId: p.ventaId || null, singleId: p.id };
+                    }
+                    gruposMap[key].items.push(p);
+                    gruposMap[key].total += (p.precioVenta || 0);
+                });
+
+                let gruposArray = Object.values(gruposMap);
+
+                if (texto) {
+                    gruposArray = gruposArray.filter(g => g.items.some(i => (i.codigo || '').toLowerCase().includes(texto) || (i.nombre || '').toLowerCase().includes(texto)));
+                }
+
+                $('contadorPiezas').textContent = gruposArray.length === 1 ? 'Mostrando 1 venta' : `Mostrando ${gruposArray.length} ventas`;
+
+                if (gruposArray.length === 0) {
+                    $('emptyState').classList.remove('hidden');
+                    $('inventoryTableBody').innerHTML = '';
+                } else {
+                    $('emptyState').classList.add('hidden');
+                    $('inventoryTableBody').innerHTML = gruposArray.map(g => {
+                        let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-bold">($${(i.precioVenta || 0).toFixed(2)})</span>`).join('<br>');
+                        let btnAccionTicket = '';
+
+                        if (g.ventaId) {
+                            btnAccionTicket = `<button type="button" onclick="mostrarTicketPorVenta('${g.ventaId}')" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
+                        } else {
+                            btnAccionTicket = `<button type="button" onclick="mostrarTicketPorVentaSingle(${g.singleId})" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
+                        }
+
+                        let botonesDevolucion = g.items.map(i => `<button type="button" onclick="cambiarEstadoIndividual(${i.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-sm">↩️ Devolver [${i.codigo}]</button>`).join(' ');
+
                         return `
-                            <tr class="hover:bg-arena-50 transition">
-                                <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
-                                <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''} ${fecha}</td>
-                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
-                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
-                                <td class="py-4 px-3 font-extrabold text-green-700 text-base">$${(p.precioVenta || 0).toFixed(2)}</td>
-                                <td class="py-4 px-3 text-right">
-                                    <div class="inline-flex items-center gap-2">
-                                        <button type="button" onclick="cambiarEstado(${p.id})" class="text-sm bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-3 py-2 rounded-xl shadow-sm">Devolver</button>
-                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-2 rounded-xl shadow-sm">Borrar</button>
+                            <tr class="hover:bg-arena-50 transition border-b border-arena-200">
+                                <td class="py-4 px-3 font-extrabold text-terracota-700 text-base align-top">${g.fecha}</td>
+                                <td class="py-4 px-3 text-gray-900 text-sm align-top space-y-1.5">${listaNombres}</td>
+                                <td class="py-4 px-3 font-extrabold text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
+                                <td class="py-4 px-3 text-right align-top">
+                                    <div class="flex flex-col items-end gap-2.5">
+                                        <!-- Fila principal de botones (Ver Ticket y Borrar) -->
+                                        <div class="flex items-center gap-2">
+                                            ${btnAccionTicket}
+                                            <button type="button" onclick="eliminarProducto(${g.items[0].id})" class="bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm">🗑️ Borrar</button>
+                                        </div>
+                                        <!-- Fila ordenada de devoluciones -->
+                                        <div class="flex flex-wrap gap-1.5 justify-end pt-1 border-t border-arena-100 w-full">
+                                            ${botonesDevolucion}
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
                         `;
-                    }
-                }).join('');
+                    }).join('');
+                }
             }
             actualizarFinanzas();
         }
