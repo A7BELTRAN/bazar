@@ -113,7 +113,7 @@
 
         <!-- Recuadro de Inventario -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border-2 border-arena-200">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
                 <h2 id="tituloSeccion" class="text-xl font-extrabold text-gray-900 flex items-center gap-2">
                     <span>📋</span> Inventario Disponible
                 </h2>
@@ -126,6 +126,13 @@
                         Vendidos
                     </button>
                 </div>
+            </div>
+
+            <!-- Contador Rápido de Piezas -->
+            <div class="mb-4">
+                <span id="contadorPiezas" class="inline-block bg-terracota-50 text-terracota-700 font-bold text-sm px-3 py-1.5 rounded-lg border border-terracota-100">
+                    Mostrando 0 artículos
+                </span>
             </div>
 
             <!-- Buscador y Filtro -->
@@ -203,7 +210,7 @@
         </div>
     </div>
 
-    <!-- Lógica ultrarrápida sin bloqueos -->
+    <!-- Lógica optimizada con contador de piezas -->
     <script>
         let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
         let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
@@ -256,7 +263,6 @@
         function cambiarVista(vista) {
             vistaActual = vista;
             if (vista === 'disponible') {
-                $('tabDisponibleclassName') = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm"; // safety fallback
                 $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
                 $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
                 $('tituloSeccion').innerHTML = `<span>📋</span> Inventario Disponible`;
@@ -428,16 +434,7 @@
             $('totalGanancias').className = `text-3xl font-extrabold mt-2 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
         }
 
-        // Búsqueda directa por celda para máxima velocidad sin tirones
         function filtrarEnVivo() {
-            const texto = $('inputBuscador').value.toLowerCase().trim();
-            const catFiltro = $('selectFiltroCat').value;
-            
-            // Si el buscador está vacío y no hay filtro complejo, renderizamos normal al instante
-            if (texto === "" && catFiltro === "") {
-                renderizar();
-                return;
-            }
             renderizar();
         }
 
@@ -451,6 +448,11 @@
                 const matchCat = catFiltro === "" || (p.categoria || 'General') === catFiltro;
                 return matchEstado && matchTexto && matchCat;
             });
+
+            // Actualizar el contador rápido de piezas en tiempo real
+            const totalMostrados = lista.length;
+            const textoPiezas = totalMostrados === 1 ? 'Mostrando 1 artículo' : `Mostrando ${totalMostrados} artículos`;
+            $('contadorPiezas').textContent = textoPiezas;
 
             if (lista.length === 0) {
                 $('emptyState').classList.remove('hidden');
