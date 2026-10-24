@@ -6,6 +6,8 @@
     <title>Tu bazar culiacán</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería para generar códigos QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -28,6 +30,54 @@
             }
         }
     </script>
+    <!-- Reglas de impresión -->
+    <style>
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            header, main, section, #panelCarrito, #modalGastos {
+                display: none !important;
+            }
+            #modalTicket, #modalTicket *, #modalEtiquetasLote, #modalEtiquetasLote * {
+                visibility: visible !important;
+            }
+            #modalTicket, #modalEtiquetasLote {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            #modalTicket > div, #modalEtiquetasLote > div {
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 5px !important;
+            }
+            #modalTicket button, #modalEtiquetasLote button {
+                display: none !important;
+            }
+            #contenidoTicketVisual, #contenedorEtiquetasImpresion {
+                max-height: none !important;
+                overflow: visible !important;
+                border: none !important;
+                background: white !important;
+            }
+            .grid-etiquetas-print {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 10px !important;
+                justify-content: center !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-32">
 
@@ -37,7 +87,6 @@
             <h1 class="text-3xl font-extrabold tracking-wide">Tu bazar culiacán</h1>
             <p class="text-terracota-100 text-base mt-1 font-medium">Control de inventario, ventas y ganancias</p>
             
-            <!-- Botones de Respaldo y Carga -->
             <div class="flex justify-center gap-4 mt-5">
                 <button type="button" onclick="exportarDatos()" class="bg-terracota-700 hover:bg-terracota-800 text-white text-sm font-bold px-4 py-3 rounded-xl shadow-md transition flex items-center gap-2">
                     💾 Guardar Copia
@@ -93,7 +142,7 @@
                     <input type="text" id="inputCategoria" placeholder="Ej. Ropa, Zapatos" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Costo ($)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Costo de Tienda ($)</label>
                     <input type="number" step="0.01" id="inputCosto" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
@@ -128,17 +177,20 @@
                 </div>
             </div>
 
-            <!-- Contador Rápido de Piezas -->
-            <div class="mb-4">
+            <!-- Contador Rápido de Piezas y Botón de Lote de Etiquetas -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 <span id="contadorPiezas" class="inline-block bg-terracota-50 text-terracota-700 font-bold text-sm px-3 py-1.5 rounded-lg border border-terracota-100">
                     Mostrando 0 artículos
                 </span>
+                <button type="button" id="btnEtiquetasLote" onclick="mostrarEtiquetasSeleccionadas()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm px-4 py-2 rounded-xl shadow-sm transition hidden flex items-center gap-2">
+                    🏷️ Imprimir Etiquetas Seleccionadas (<span id="numSeleccionadas">0</span>)
+                </button>
             </div>
 
             <!-- Buscador y Filtro -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
                 <div>
-                    <input type="text" id="inputBuscador" oninput="filtrarEnVivo()" placeholder="🔍 Buscar por código o nombre..." class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <input type="text" id="inputBuscador" oninput="renderizar()" placeholder="🔍 Buscar por código o nombre..." class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
                 </div>
                 <div>
                     <select id="selectFiltroCat" onchange="renderizar()" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium bg-white">
@@ -151,10 +203,11 @@
                 <table class="w-full text-left border-collapse text-base">
                     <thead>
                         <tr id="tableHeader" class="border-b-2 border-arena-200 text-gray-600 text-sm uppercase tracking-wider font-extrabold">
+                            <th class="py-3 px-2 w-10 text-center">✓</th>
                             <th class="py-3 px-3">Código</th>
                             <th class="py-3 px-3">Artículo</th>
                             <th class="py-3 px-3">Cat.</th>
-                            <th class="py-3 px-3">Costo</th>
+                            <th class="py-3 px-3">Costo de Tienda</th>
                             <th class="py-3 px-3">Precio</th>
                             <th class="py-3 px-3 text-right">Acciones</th>
                         </tr>
@@ -221,9 +274,7 @@
 
             <div class="mt-6 border-t-2 border-arena-200 pt-4">
                 <h4 class="text-sm font-extrabold text-gray-600 uppercase tracking-wider mb-2">Gastos Registrados</h4>
-                <div id="listaGastos" class="max-h-40 overflow-y-auto space-y-2 text-sm">
-                    <!-- Historial de gastos -->
-                </div>
+                <div id="listaGastos" class="max-h-40 overflow-y-auto space-y-2 text-sm"></div>
             </div>
         </div>
     </div>
@@ -233,13 +284,25 @@
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
             <h3 class="text-xl font-extrabold text-gray-900 mb-2">Comprobante de Venta</h3>
             
-            <div id="contenidoTicketVisual" class="bg-arena-50 p-4 rounded-2xl border-2 border-dashed border-arena-200 text-left font-mono text-sm space-y-2 my-4 max-h-60 overflow-y-auto">
-                <!-- Se llena con los artículos de la venta -->
-            </div>
+            <div id="contenidoTicketVisual" class="bg-arena-50 p-4 rounded-2xl border-2 border-dashed border-arena-200 text-left font-mono text-sm space-y-2 my-4 max-h-60 overflow-y-auto"></div>
 
             <div class="flex gap-3 pt-2">
                 <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3 px-4 rounded-xl transition text-base shadow-md">🖨️ Imprimir</button>
                 <button type="button" onclick="cerrarModalTicket()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-xl transition text-base">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizador de Lote de Etiquetas -->
+    <div id="modalEtiquetasLote" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-lg font-extrabold text-gray-900 mb-2">Etiquetas Seleccionadas</h3>
+            
+            <div id="contenedorEtiquetasImpresion" class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 my-4 max-h-96 overflow-y-auto grid-etiquetas-print grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3 px-4 rounded-xl transition text-base shadow-md">🖨️ Imprimir Todo</button>
+                <button type="button" onclick="cerrarModalEtiquetasLote()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-xl transition text-base">Cerrar</button>
             </div>
         </div>
     </div>
@@ -249,9 +312,25 @@
         let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
         let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
         let carritoIds = [];
+        let etiquetasSeleccionadasIds = [];
         let vistaActual = 'disponible';
 
         const $ = id => document.getElementById(id);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('item');
+            if (itemId) {
+                setTimeout(() => {
+                    const prod = productos.find(p => p.id == itemId);
+                    if (prod) {
+                        alert(`📱 Escaneado correctamente:\nCódigo: ${prod.codigo}\nArtículo: ${prod.nombre}\nPrecio: $${(prod.precioVenta || 0).toFixed(2)}`);
+                    }
+                }, 300);
+            }
+            actualizarFiltroCategorias();
+            renderizar();
+        });
 
         function exportarDatos() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ productos, gastos }, null, 2));
@@ -275,7 +354,11 @@
                             productos = contenido.productos;
                             gastos = contenido.gastos;
                             carritoIds = [];
-                            guardarYActualizar();
+                            etiquetasSeleccionadasIds = [];
+                            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+                            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+                            actualizarFiltroCategorias();
+                            renderizar();
                             alert("¡Datos cargados con éxito!");
                         }
                     } else {
@@ -289,16 +372,10 @@
             reader.readAsText(file);
         }
 
-        function guardarYActualizar() {
-            localStorage.setItem('bazar_productos', JSON.stringify(productos));
-            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
-            actualizarFiltroCategorias();
-            renderizar();
-        }
-
         function cambiarVista(vista) {
             vistaActual = vista;
             carritoIds = [];
+            etiquetasSeleccionadasIds = [];
             if (vista === 'disponible') {
                 $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
                 $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
@@ -335,15 +412,17 @@
             $('gastoNombre').value = '';
             $('gastoMonto').value = '';
             
-            guardarYActualizar();
+            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
             renderizarGastos();
+            renderizar();
         }
 
         function eliminarGasto(id) {
             if (confirm("¿Eliminar este gasto?")) {
                 gastos = gastos.filter(g => g.id !== id);
-                guardarYActualizar();
+                localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
                 renderizarGastos();
+                renderizar();
             }
         }
 
@@ -419,11 +498,13 @@
                 return p;
             });
 
+            localStorage.setItem('bazar_productos', JSON.stringify(productos));
             generarHtmlTicket(itemsVendidos, hoy, totalVenta);
             $('modalTicket').classList.remove('hidden');
 
             carritoIds = [];
-            guardarYActualizar();
+            actualizarFiltroCategorias();
+            renderizar();
             actualizarCarritoUI();
         }
 
@@ -469,6 +550,84 @@
             $('modalTicket').classList.add('hidden');
         }
 
+        function toggleSeleccionEtiqueta(id) {
+            if (etiquetasSeleccionadasIds.includes(id)) {
+                etiquetasSeleccionadasIds = etiquetasSeleccionadasIds.filter(itemId => itemId !== id);
+            } else {
+                etiquetasSeleccionadasIds.push(id);
+            }
+            actualizarBotonEtiquetasLote();
+        }
+
+        function actualizarBotonEtiquetasLote() {
+            const btn = $('btnEtiquetasLote');
+            const countSpan = $('numSeleccionadas');
+            countSpan.textContent = etiquetasSeleccionadasIds.length;
+            if (etiquetasSeleccionadasIds.length > 0) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function mostrarEtiquetasSeleccionadas() {
+            if (etiquetasSeleccionadasIds.length === 0) return;
+
+            const contenedor = $('contenedorEtiquetasImpresion');
+            contenedor.innerHTML = '';
+
+            const urlBase = window.location.href.split('?')[0];
+
+            etiquetasSeleccionadasIds.forEach((id, index) => {
+                const p = productos.find(item => item.id == id);
+                if (!p) return;
+
+                const etiquetaDiv = document.createElement('div');
+                etiquetaDiv.className = "bg-white p-3 rounded-2xl border-2 border-arena-800 text-center space-y-1 my-2 inline-block shadow-sm";
+                etiquetaDiv.style.width = "220px";
+                etiquetaDiv.style.margin = "5px";
+
+                etiquetaDiv.innerHTML = `
+                    <div style="font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #b0573b; border-bottom: 1px solid #e6dfd1; padding-bottom: 2px;">TU BAZAR CULIACÁN</div>
+                    <div style="margin-top: 4px;">
+                        <span style="font-size: 9px; color: #6b7280; text-transform: uppercase; font-weight: bold; display: block;">Código de artículo:</span>
+                        <span style="font-weight: 900; font-size: 13px; background: #f4f1ea; padding: 1px 6px; border-radius: 4px; display: inline-block;">${p.codigo || 'S/C'}</span>
+                    </div>
+                    <div style="font-weight: 800; font-size: 12px; color: #2d2a22; line-height: 1.1; padding: 2px 0;">${p.nombre || 'Artículo'}</div>
+                    <div style="background: #fdf8f6; border: 1px solid #fbe8e4; padding: 4px; border-radius: 6px; margin: 3px 0; display: flex; justify-content: space-around; align-items: center;">
+                        <div>
+                            <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; font-weight: bold;">Precio Tienda</div>
+                            <div style="font-weight: 800; font-size: 12px; color: #9ca3af; text-decoration: line-through;">$${(p.costo || 0).toFixed(2)}</div>
+                        </div>
+                        <div style="border-left: 1px solid #e6dfd1; height: 20px;"></div>
+                        <div>
+                            <div style="font-size: 8px; color: #b0573b; text-transform: uppercase; font-weight: 900;">Precio Bazar</div>
+                            <div style="font-weight: 900; font-size: 15px; color: #16a34a; line-height: 1;">$${(p.precioVenta || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div id="qr_lote_${index}" style="display: flex; justify-content: center; margin: 3px 0;"></div>
+                `;
+
+                contenedor.appendChild(etiquetaDiv);
+
+                new QRCode(document.getElementById(`qr_lote_${index}`), {
+                    text: `${urlBase}?item=${p.id}`,
+                    width: 65,
+                    height: 65,
+                    colorDark : "#2d2a22",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.M
+                });
+            });
+
+            $('modalEtiquetasLote').classList.remove('hidden');
+        }
+
+        function cerrarModalEtiquetasLote() {
+            $('modalEtiquetasLote').classList.add('hidden');
+        }
+
+        // --- Guardado Súper Ágil ---
         function guardarProducto() {
             const codigo = $('inputCodigo').value.trim();
             const nombre = $('inputNombre').value.trim();
@@ -486,7 +645,7 @@
                 productos = productos.map(p => p.id == idEdicion ? { ...p, codigo, nombre, categoria, costo, precioVenta } : p);
                 cancelarEdicion();
             } else {
-                productos.push({
+                productos.unshift({
                     id: Date.now(),
                     codigo,
                     nombre,
@@ -500,7 +659,9 @@
                 limpiarFormulario();
             }
 
-            guardarYActualizar();
+            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            actualizarFiltroCategorias();
+            renderizar();
         }
 
         function prepararEdicion(id) {
@@ -518,6 +679,7 @@
             $('btnGuardar').textContent = "Actualizar Artículo";
             $('btnGuardar').className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md";
             $('btnCancelarEdicion').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function cancelarEdicion() {
@@ -547,14 +709,20 @@
                 }
                 return p;
             });
-            guardarYActualizar();
+            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            actualizarFiltroCategorias();
+            renderizar();
         }
 
         function eliminarProducto(id) {
             if (confirm("¿Seguro que deseas eliminar este artículo?")) {
                 productos = productos.filter(p => p.id !== id);
                 carritoIds = carritoIds.filter(itemId => itemId !== id);
-                guardarYActualizar();
+                etiquetasSeleccionadasIds = etiquetasSeleccionadasIds.filter(itemId => itemId !== id);
+                localStorage.setItem('bazar_productos', JSON.stringify(productos));
+                actualizarBotonEtiquetasLote();
+                actualizarFiltroCategorias();
+                renderizar();
             }
         }
 
@@ -578,20 +746,17 @@
             $('totalGanancias').className = `text-3xl font-extrabold mt-2 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
         }
 
-        function filtrarEnVivo() {
-            renderizar();
-        }
-
         function renderizar() {
             const texto = $('inputBuscador').value.toLowerCase().trim();
             const catFiltro = $('selectFiltroCat').value;
 
             if (vistaActual === 'disponible') {
                 $('tableHeader').innerHTML = `
+                    <th class="py-3 px-2 w-10 text-center">✓</th>
                     <th class="py-3 px-3">Código</th>
                     <th class="py-3 px-3">Artículo</th>
                     <th class="py-3 px-3">Cat.</th>
-                    <th class="py-3 px-3">Costo</th>
+                    <th class="py-3 px-3">Costo de Tienda</th>
                     <th class="py-3 px-3">Precio</th>
                     <th class="py-3 px-3 text-right">Acciones</th>
                 `;
@@ -611,20 +776,24 @@
                 } else {
                     $('emptyState').classList.add('hidden');
                     $('inventoryTableBody').innerHTML = lista.map(p => {
-                        const seleccionado = carritoIds.includes(p.id);
+                        const seleccionadoCarrito = carritoIds.includes(p.id);
+                        const seleccionadoEtiqueta = etiquetasSeleccionadasIds.includes(p.id);
                         return `
-                            <tr class="hover:bg-arena-50 transition ${seleccionado ? 'bg-green-50/60' : ''}">
+                            <tr class="hover:bg-arena-50 transition ${seleccionadoCarrito ? 'bg-green-50/60' : ''}">
+                                <td class="py-4 px-2 text-center">
+                                    <input type="checkbox" onclick="toggleSeleccionEtiqueta(${p.id})" ${seleccionadoEtiqueta ? 'checked' : ''} class="w-5 h-5 accent-terracota-600 cursor-pointer">
+                                </td>
                                 <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
                                 <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
                                 <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
                                 <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
                                 <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
                                 <td class="py-4 px-3 text-right">
-                                    <div class="inline-flex items-center gap-2">
-                                        <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionado ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
-                                            ${seleccionado ? '✓ Seleccionado' : '🛒 Agregar'}
-                                        </button>
+                                    <div class="inline-flex items-center gap-1.5 justify-end">
                                         <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
+                                        <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
+                                            ${seleccionadoCarrito ? '✓ Venta' : '🛒 Venta'}
+                                        </button>
                                         <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
                                     </div>
                                 </td>
@@ -633,7 +802,7 @@
                     }).join('');
                 }
             } else {
-                // Vista de Vendidos con botones ordenados limpiamente
+                // Vista de Vendidos
                 $('tableHeader').innerHTML = `
                     <th class="py-3 px-3">Fecha / Venta</th>
                     <th class="py-3 px-3">Artículos Vendidos</th>
@@ -660,6 +829,7 @@
                 }
 
                 $('contadorPiezas').textContent = gruposArray.length === 1 ? 'Mostrando 1 venta' : `Mostrando ${gruposArray.length} ventas`;
+                $('btnEtiquetasLote').classList.add('hidden');
 
                 if (gruposArray.length === 0) {
                     $('emptyState').classList.remove('hidden');
@@ -685,12 +855,10 @@
                                 <td class="py-4 px-3 font-extrabold text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
                                 <td class="py-4 px-3 text-right align-top">
                                     <div class="flex flex-col items-end gap-2.5">
-                                        <!-- Fila principal de botones (Ver Ticket y Borrar) -->
                                         <div class="flex items-center gap-2">
                                             ${btnAccionTicket}
                                             <button type="button" onclick="eliminarProducto(${g.items[0].id})" class="bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm">🗑️ Borrar</button>
                                         </div>
-                                        <!-- Fila ordenada de devoluciones -->
                                         <div class="flex flex-wrap gap-1.5 justify-end pt-1 border-t border-arena-100 w-full">
                                             ${botonesDevolucion}
                                         </div>
@@ -703,9 +871,6 @@
             }
             actualizarFinanzas();
         }
-
-        actualizarFiltroCategorias();
-        renderizar();
     </script>
 </body>
 </html>
