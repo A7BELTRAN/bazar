@@ -15,18 +15,8 @@
             theme: {
                 extend: {
                     colors: {
-                        terracota: {
-                            50: '#fdf8f6',
-                            100: '#fbe8e4',
-                            500: '#c86d51',
-                            600: '#b0573b',
-                            700: '#92452e',
-                        },
-                        arena: {
-                            100: '#f4f1ea',
-                            200: '#e6dfd1',
-                            800: '#2d2a22'
-                        }
+                        terracota: { 50: '#fdf8f6', 100: '#fbe8e4', 500: '#c86d51', 600: '#b0573b', 700: '#92452e' },
+                        arena: { 100: '#f4f1ea', 200: '#e6dfd1', 800: '#2d2a22' }
                     }
                 }
             }
@@ -35,53 +25,18 @@
     <!-- Reglas de impresión -->
     <style>
         @media print {
-            body * {
-                visibility: hidden !important;
-            }
-            header, main, section, #panelCarrito, #modalGastos, #modalCorteCaja, #modalScanner {
-                display: none !important;
-            }
-            #modalTicket, #modalTicket *, #modalEtiquetasLote, #modalEtiquetasLote * {
-                visibility: visible !important;
-            }
-            #modalTicket, #modalEtiquetasLote {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                height: auto !important;
-                background: white !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-            #modalTicket > div, #modalEtiquetasLote > div {
-                box-shadow: none !important;
-                border: none !important;
-                max-width: 100% !important;
-                width: 100% !important;
-                padding: 5px !important;
-            }
-            #modalTicket button, #modalEtiquetasLote button {
-                display: none !important;
-            }
-            #contenidoTicketVisual, #contenedorEtiquetasImpresion {
-                max-height: none !important;
-                overflow: visible !important;
-                border: none !important;
-                background: white !important;
-            }
-            .grid-etiquetas-print {
-                display: flex !important;
-                flex-wrap: wrap !important;
-                gap: 10px !important;
-                justify-content: center !important;
-            }
+            body * { visibility: hidden !important; }
+            header, main, section, #panelCarrito, #modalGastos, #modalCorteCaja, #modalScanner, #modalCobro { display: none !important; }
+            #modalTicket, #modalTicket *, #modalEtiquetasLote, #modalEtiquetasLote * { visibility: visible !important; }
+            #modalTicket, #modalEtiquetasLote { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: auto !important; background: white !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: none !important; }
+            #modalTicket > div, #modalEtiquetasLote > div { box-shadow: none !important; border: none !important; max-width: 100% !important; width: 100% !important; padding: 5px !important; }
+            #modalTicket button, #modalEtiquetasLote button { display: none !important; }
+            #contenidoTicketVisual, #contenedorEtiquetasImpresion { max-height: none !important; overflow: visible !important; border: none !important; background: white !important; }
+            .grid-etiquetas-print { display: flex !important; flex-wrap: wrap !important; gap: 10px !important; justify-content: center !important; }
         }
     </style>
 </head>
-<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-32">
+<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-36">
 
     <!-- Encabezado -->
     <header class="bg-terracota-600 text-white shadow-md">
@@ -152,9 +107,12 @@
                     <label class="block text-sm font-bold text-gray-700 mb-1">Categoría</label>
                     <div class="flex gap-2">
                         <input type="text" id="inputCategoria" onkeydown="verificarEnter(event)" placeholder="Ej. Ropa, Zapatos" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
-                        <select id="selectCategoriaRapida" onchange="seleccionarCategoriaRapida(this)" class="px-2 py-3 border-2 border-arena-200 rounded-xl bg-white text-sm font-bold text-terracota-700 cursor-pointer" title="Categorías frecuentes">
-                            <option value="">📁</option>
-                        </select>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        <button type="button" onclick="fijarCategoria('Ropa')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">👗 Ropa</button>
+                        <button type="button" onclick="fijarCategoria('Zapatos')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">👠 Zapatos</button>
+                        <button type="button" onclick="fijarCategoria('Accesorios')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">👜 Accesorios</button>
+                        <button type="button" onclick="fijarCategoria('Hogar')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">🏡 Hogar</button>
                     </div>
                 </div>
                 <div>
@@ -245,23 +203,63 @@
 
     </main>
 
-    <!-- Carrito Flotante Fijo en la Base -->
-    <section id="panelCarrito" class="fixed bottom-0 left-0 right-0 bg-green-900 text-white p-4 shadow-2xl border-t-4 border-green-500 hidden z-40">
-        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+    <!-- Carrito Flotante Fijo en la Base con Acordeón Desplegable -->
+    <section id="panelCarrito" class="fixed bottom-0 left-0 right-0 bg-green-900 text-white shadow-2xl border-t-4 border-green-500 hidden z-40 transition-all duration-300">
+        <div id="carritoDesplegable" class="max-w-4xl mx-auto px-4 pt-3 pb-1 max-h-52 overflow-y-auto space-y-2 border-b border-green-800 hidden">
+            <p class="text-xs font-bold uppercase tracking-wider text-green-300">Artículos seleccionados para venta:</p>
+            <div id="listaItemsCarrito" class="space-y-1.5 text-sm"></div>
+        </div>
+        <div class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start cursor-pointer select-none" onclick="toggleAcordeonCarrito()">
                 <span class="text-lg font-extrabold flex items-center gap-2">
                     🛒 <span id="carritoCantidad">0</span> artículos seleccionados
+                    <span id="iconoFlecha" class="text-xs transition-transform transform inline-block">▼</span>
                 </span>
-                <button type="button" onclick="vaciarCarrito()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition">Cancelar</button>
+                <button type="button" onclick="event.stopPropagation(); vaciarCarrito();" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition sm:hidden">Cancelar</button>
             </div>
             <div class="flex items-center gap-4 w-full sm:w-auto justify-between">
+                <button type="button" onclick="vaciarCarrito()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition hidden sm:inline-block">Cancelar</button>
                 <p class="text-xl font-extrabold">Total: <span id="carritoTotal" class="text-green-300">$0.00</span></p>
-                <button type="button" onclick="procesarVentaMulti()" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-6 py-3 rounded-xl shadow-lg transition text-base">
+                <button type="button" onclick="abrirModalCobro()" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-6 py-3 rounded-xl shadow-lg transition text-base">
                     ✅ Cobrar y Ticket
                 </button>
             </div>
         </div>
     </section>
+
+    <!-- Modal para Seleccionar Forma de Pago y Calculadora de Cambio -->
+    <div id="modalCobro" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-xl font-extrabold text-gray-900 mb-1">💳 Forma de Pago</h3>
+            <p class="text-xs font-semibold text-gray-500 mb-4">Selecciona cómo pagó el cliente</p>
+
+            <div class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 text-center mb-4">
+                <p class="text-xs font-bold text-gray-500 uppercase">Total a Cobrar</p>
+                <p id="montoCobroModal" class="text-3xl font-extrabold text-green-600 mt-1">$0.00</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <button type="button" onclick="seleccionarMetodoCobro('Efectivo')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-3 rounded-xl transition text-base shadow flex flex-col items-center gap-1">
+                    <span class="text-xl">💵</span> Efectivo
+                </button>
+                <button type="button" onclick="procesarVentaConMetodo('Transferencia')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-3 rounded-xl transition text-base shadow flex flex-col items-center gap-1">
+                    <span class="text-xl">📱</span> Transferencia
+                </button>
+            </div>
+
+            <div id="seccionEfectivo" class="bg-arena-50 p-3 rounded-2xl border-2 border-arena-200 mb-4 hidden text-left space-y-2">
+                <label class="block text-xs font-bold text-gray-700">¿Con cuánto paga el cliente ($)?</label>
+                <input type="number" step="0.01" id="inputEfectivoRecibido" oninput="calcularCambio()" placeholder="0.00" class="w-full px-3 py-2 border-2 border-arena-200 rounded-xl font-bold text-base bg-white">
+                <div class="flex justify-between items-center pt-1 text-sm font-bold">
+                    <span class="text-gray-600">Cambio a devolver:</span>
+                    <span id="textoCambio" class="text-xl font-extrabold text-terracota-600">$0.00</span>
+                </div>
+                <button type="button" onclick="procesarVentaConMetodo('Efectivo')" class="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-extrabold py-2.5 rounded-xl text-sm shadow">Confirmar Venta en Efectivo</button>
+            </div>
+
+            <button type="button" onclick="cerrarModalCobro()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 px-4 rounded-xl transition text-sm">Cancelar</button>
+        </div>
+    </div>
 
     <!-- Modal Escáner de Cámara QR -->
     <div id="modalScanner" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center p-4 z-50">
@@ -312,11 +310,11 @@
         </div>
     </div>
 
-    <!-- Modal Corte y Reporte por Rango de Fechas -->
+    <!-- Modal Corte y Reporte por Rango de Fechas con Desglose de Pagos -->
     <div id="modalCorteCaja" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
             <h3 class="text-xl font-extrabold text-gray-900 mb-1">📊 Corte y Reporte de Ventas</h3>
-            <p class="text-xs font-semibold text-gray-500 mb-4">Filtra por periodo para calcular ganancias exactas</p>
+            <p class="text-xs font-semibold text-gray-500 mb-4">Desglose de efectivo vs transferencia</p>
 
             <div class="space-y-3 mb-4 text-left">
                 <div>
@@ -329,13 +327,21 @@
                 </div>
             </div>
             
-            <div class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 text-left text-sm space-y-3 my-2">
+            <div class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 text-left text-sm space-y-2.5 my-2">
                 <div class="flex justify-between font-bold">
                     <span class="text-gray-600">Piezas vendidas:</span>
                     <span id="cortePiezas" class="text-gray-900">0</span>
                 </div>
                 <div class="flex justify-between font-bold">
-                    <span class="text-gray-600">Ventas totales:</span>
+                    <span class="text-gray-600">💵 En Efectivo (Caja):</span>
+                    <span id="corteEfectivo" class="text-green-700">$0.00</span>
+                </div>
+                <div class="flex justify-between font-bold">
+                    <span class="text-gray-600">📱 En Transferencia:</span>
+                    <span id="corteTransferencia" class="text-blue-700">$0.00</span>
+                </div>
+                <div class="border-t border-arena-200 pt-2 flex justify-between font-extrabold text-base">
+                    <span class="text-gray-800">Total Ventas:</span>
                     <span id="corteVentas" class="text-terracota-600">$0.00</span>
                 </div>
             </div>
@@ -372,7 +378,7 @@
         </div>
     </div>
 
-    <!-- Lógica de la aplicación -->
+    <!-- Lógica de la aplicación Ultra-Optimizada -->
     <script>
         let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
         let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
@@ -380,6 +386,7 @@
         let etiquetasSeleccionadasIds = [];
         let vistaActual = 'disponible';
         let html5QrcodeScanner = null;
+        let carritoAbierto = false;
 
         const $ = id => document.getElementById(id);
 
@@ -387,17 +394,22 @@
             const urlParams = new URLSearchParams(window.location.search);
             const itemId = urlParams.get('item');
             if (itemId) {
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     const prod = productos.find(p => p.id == itemId);
                     if (prod) {
                         alert(`📱 Escaneado correctamente:\nCódigo: ${prod.codigo}\nArtículo: ${prod.nombre}\nPrecio: $${(prod.precioVenta || 0).toFixed(2)}`);
                     }
-                }, 300);
+                });
             }
             actualizarFiltroCategorias();
             sugerirSiguienteCodigo();
             renderizar();
         });
+
+        function guardarAutomatico() {
+            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+        }
 
         function verificarEnter(event) {
             if (event.key === 'Enter') {
@@ -423,14 +435,10 @@
             }
         }
 
-        function seleccionarCategoriaRapida(selectElem) {
-            if (selectElem.value) {
-                $('inputCategoria').value = selectElem.value;
-                selectElem.value = "";
-            }
+        function fijarCategoria(cat) {
+            $('inputCategoria').value = cat;
         }
 
-        // --- MÓDULO ESCÁNER CÁMARA QR ---
         function abrirEscanerQR() {
             $('modalScanner').classList.remove('hidden');
             if (!html5QrcodeScanner) {
@@ -464,8 +472,8 @@
                         alert("No se encontró ningún artículo registrado con ese código QR.");
                     }
                 },
-                (errorMessage) => { /* Ignorar lecturas vacías */ }
-            ).catch(err => {
+                () => {}
+            ).catch(() => {
                 alert("No se pudo iniciar la cámara. Asegúrate de dar los permisos correspondientes.");
                 cerrarEscanerQR();
             });
@@ -506,8 +514,7 @@
                             gastos = contenido.gastos;
                             carritoIds = [];
                             etiquetasSeleccionadasIds = [];
-                            localStorage.setItem('bazar_productos', JSON.stringify(productos));
-                            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+                            guardarAutomatico();
                             actualizarFiltroCategorias();
                             sugerirSiguienteCodigo();
                             renderizar();
@@ -516,7 +523,7 @@
                     } else {
                         alert("El archivo no tiene el formato correcto.");
                     }
-                } catch (error) {
+                } catch {
                     alert("Error al leer el archivo JSON.");
                 }
                 event.target.value = '';
@@ -528,6 +535,7 @@
             vistaActual = vista;
             carritoIds = [];
             etiquetasSeleccionadasIds = [];
+            carritoAbierto = false;
             if (vista === 'disponible') {
                 $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
                 $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
@@ -550,7 +558,6 @@
             $('modalGastos').classList.add('hidden');
         }
 
-        // --- MÓDULO REPORTE / CORTE POR FECHAS ---
         function abrirCorteCaja() {
             const hoyInput = new Date().toISOString().split('T')[0];
             $('filtroFechaInicio').value = hoyInput;
@@ -562,24 +569,35 @@
         function calcularReporteFechas() {
             const fInicioVal = $('filtroFechaInicio').value;
             const fFinVal = $('filtroFechaFin').value;
-
             if (!fInicioVal || !fFinVal) return;
 
             const inicio = new Date(fInicioVal + "T00:00:00");
             const fin = new Date(fFinVal + "T23:59:59");
 
-            const vendidosRango = productos.filter(p => {
-                if (p.estado !== 'Vendido' || !p.fechaVenta) return false;
-                const partes = p.fechaVenta.split('/');
-                if (partes.length !== 3) return false;
-                const fVenta = new Date(partes[2], partes[1] - 1, partes[0]);
-                return fVenta >= inicio && fVenta <= fin;
-            });
+            let totalEfectivo = 0, totalTransferencia = 0, contador = 0;
 
-            const totalMonto = vendidosRango.reduce((acc, p) => acc + (p.precioVenta || 0), 0);
+            for (let i = 0; i < productos.length; i++) {
+                const p = productos[i];
+                if (p.estado === 'Vendido' && p.fechaVenta) {
+                    const partes = p.fechaVenta.split('/');
+                    if (partes.length === 3) {
+                        const fVenta = new Date(partes[2], partes[1] - 1, partes[0]);
+                        if (fVenta >= inicio && fVenta <= fin) {
+                            contador++;
+                            if (p.metodoPago === 'Transferencia') {
+                                totalTransferencia += (p.precioVenta || 0);
+                            } else {
+                                totalEfectivo += (p.precioVenta || 0);
+                            }
+                        }
+                    }
+                }
+            }
 
-            $('cortePiezas').textContent = `${vendidosRango.length} piezas`;
-            $('corteVentas').textContent = `$${totalMonto.toFixed(2)}`;
+            $('cortePiezas').textContent = `${contador} piezas`;
+            $('corteEfectivo').textContent = `$${totalEfectivo.toFixed(2)}`;
+            $('corteTransferencia').textContent = `$${totalTransferencia.toFixed(2)}`;
+            $('corteVentas').textContent = `$${(totalEfectivo + totalTransferencia).toFixed(2)}`;
         }
 
         function cerrarCorteCaja() {
@@ -600,7 +618,7 @@
             $('gastoNombre').value = '';
             $('gastoMonto').value = '';
             
-            localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+            guardarAutomatico();
             renderizarGastos();
             renderizar();
         }
@@ -608,7 +626,7 @@
         function eliminarGasto(id) {
             if (confirm("¿Eliminar este gasto?")) {
                 gastos = gastos.filter(g => g.id !== id);
-                localStorage.setItem('bazar_gastos', JSON.stringify(gastos));
+                guardarAutomatico();
                 renderizarGastos();
                 renderizar();
             }
@@ -619,23 +637,29 @@
                 $('listaGastos').innerHTML = '<p class="text-gray-400 text-sm text-center py-2 font-medium">No hay gastos registrados.</p>';
                 return;
             }
-            $('listaGastos').innerHTML = gastos.map(g => `
-                <div class="flex justify-between items-center bg-arena-50 p-3 rounded-xl border-2 border-arena-200 text-sm font-semibold">
-                    <div>
-                        <span class="font-extrabold text-gray-900">${g.nombre}</span>
-                        <span class="text-terracota-600 block text-xs font-bold">(${g.tipo})</span>
+            let html = '';
+            for (let i = 0; i < gastos.length; i++) {
+                const g = gastos[i];
+                html += `
+                    <div class="flex justify-between items-center bg-arena-50 p-3 rounded-xl border-2 border-arena-200 text-sm font-semibold">
+                        <div>
+                            <span class="font-extrabold text-gray-900">${g.nombre}</span>
+                            <span class="text-terracota-600 block text-xs font-bold">(${g.tipo})</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-extrabold text-gray-800">$${(g.monto || 0).toFixed(2)}</span>
+                            <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-600 font-extrabold text-base px-2 py-1 bg-red-50 rounded-lg">✕</button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-extrabold text-gray-800">$${(g.monto || 0).toFixed(2)}</span>
-                        <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-600 font-extrabold text-base px-2 py-1 bg-red-50 rounded-lg">✕</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }
+            $('listaGastos').innerHTML = html;
         }
 
         function toggleCarrito(id) {
-            if (carritoIds.includes(id)) {
-                carritoIds = carritoIds.filter(itemId => itemId !== id);
+            const idx = carritoIds.indexOf(id);
+            if (idx > -1) {
+                carritoIds.splice(idx, 1);
             } else {
                 carritoIds.push(id);
             }
@@ -645,52 +669,128 @@
 
         function vaciarCarrito() {
             carritoIds = [];
+            carritoAbierto = false;
             actualizarCarritoUI();
             renderizar();
         }
 
+        function toggleAcordeonCarrito() {
+            if (carritoIds.length === 0) return;
+            carritoAbierto = !carritoAbierto;
+            actualizarCarritoUI();
+        }
+
         function actualizarCarritoUI() {
             const panel = $('panelCarrito');
+            const desplegable = $('carritoDesplegable');
+            const flecha = $('iconoFlecha');
+            const listaItems = $('listaItemsCarrito');
+
             if (carritoIds.length === 0 || vistaActual !== 'disponible') {
                 panel.classList.add('hidden');
+                carritoAbierto = false;
                 return;
             }
 
             panel.classList.remove('hidden');
-            const itemsSeleccionados = productos.filter(p => carritoIds.includes(p.id));
+
             let total = 0;
-            itemsSeleccionados.forEach(item => {
-                total += (item.precioVenta || 0);
-            });
+            let itemsHtml = '';
+            for (let i = 0; i < productos.length; i++) {
+                const p = productos[i];
+                if (carritoIds.includes(p.id)) {
+                    total += (p.precioVenta || 0);
+                    itemsHtml += `
+                        <div class="flex justify-between items-center bg-green-800 px-3 py-1.5 rounded-lg text-xs font-medium">
+                            <span><b>[${p.codigo}]</b> ${p.nombre}</span>
+                            <span class="font-bold text-green-200">$${(p.precioVenta || 0).toFixed(2)}</span>
+                        </div>
+                    `;
+                }
+            }
+            listaItems.innerHTML = itemsHtml;
+
+            if (carritoAbierto) {
+                desplegable.classList.remove('hidden');
+                flecha.style.transform = 'rotate(180deg)';
+            } else {
+                desplegable.classList.add('hidden');
+                flecha.style.transform = 'rotate(0deg)';
+            }
 
             $('carritoCantidad').textContent = carritoIds.length;
             $('carritoTotal').textContent = `$${total.toFixed(2)}`;
         }
 
-        function procesarVentaMulti() {
+        function abrirModalCobro() {
             if (carritoIds.length === 0) return;
+            let total = 0;
+            for (let i = 0; i < productos.length; i++) {
+                if (carritoIds.includes(productos[i].id)) total += (productos[i].precioVenta || 0);
+            }
+            $('montoCobroModal').textContent = `$${total.toFixed(2)}`;
+            $('seccionEfectivo').classList.add('hidden');
+            $('inputEfectivoRecibido').value = '';
+            $('textoCambio').textContent = '$0.00';
+            $('modalCobro').classList.remove('hidden');
+        }
+
+        function cerrarModalCobro() {
+            $('modalCobro').classList.add('hidden');
+        }
+
+        function seleccionarMetodoCobro(metodo) {
+            if (metodo === 'Efectivo') {
+                $('seccionEfectivo').classList.remove('hidden');
+                $('inputEfectivoRecibido').focus();
+            } else {
+                procesarVentaConMetodo('Transferencia');
+            }
+        }
+
+        function calcularCambio() {
+            let total = 0;
+            for (let i = 0; i < productos.length; i++) {
+                if (carritoIds.includes(productos[i].id)) total += (productos[i].precioVenta || 0);
+            }
+            const recibido = parseFloat($('inputEfectivoRecibido').value) || 0;
+            const cambio = recibido - total;
+
+            if (cambio >= 0) {
+                $('textoCambio').textContent = `$${cambio.toFixed(2)}`;
+                $('textoCambio').className = "text-xl font-extrabold text-green-600";
+            } else {
+                $('textoCambio').textContent = `Faltan $${Math.abs(cambio).toFixed(2)}`;
+                $('textoCambio').className = "text-xl font-extrabold text-red-600";
+            }
+        }
+
+        function procesarVentaConMetodo(metodoPago) {
+            if (carritoIds.length === 0) return;
+            cerrarModalCobro();
+
             const hoy = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const ventaId = 'V-' + Date.now();
-            
             let itemsVendidos = [];
             let totalVenta = 0;
 
-            productos = productos.map(p => {
-                if (carritoIds.includes(p.id)) {
-                    p.estado = 'Vendido';
-                    p.fechaVenta = hoy;
-                    p.ventaId = ventaId;
-                    itemsVendidos.push(p);
-                    totalVenta += (p.precioVenta || 0);
+            for (let i = 0; i < productos.length; i++) {
+                if (carritoIds.includes(productos[i].id)) {
+                    productos[i].estado = 'Vendido';
+                    productos[i].fechaVenta = hoy;
+                    productos[i].ventaId = ventaId;
+                    productos[i].metodoPago = metodoPago;
+                    itemsVendidos.push(productos[i]);
+                    totalVenta += (productos[i].precioVenta || 0);
                 }
-                return p;
-            });
+            }
 
-            localStorage.setItem('bazar_productos', JSON.stringify(productos));
-            generarHtmlTicket(itemsVendidos, hoy, totalVenta);
+            guardarAutomatico();
+            generarHtmlTicket(itemsVendidos, hoy, totalVenta, metodoPago);
             $('modalTicket').classList.remove('hidden');
 
             carritoIds = [];
+            carritoAbierto = false;
             actualizarFiltroCategorias();
             renderizar();
             actualizarCarritoUI();
@@ -702,29 +802,32 @@
 
             let totalVenta = itemsVenta.reduce((acc, p) => acc + (p.precioVenta || 0), 0);
             let fecha = itemsVenta[0].fechaVenta || new Date().toLocaleDateString('es-MX');
+            let metodo = itemsVenta[0].metodoPago || 'Efectivo';
 
-            generarHtmlTicket(itemsVenta, fecha, totalVenta);
+            generarHtmlTicket(itemsVenta, fecha, totalVenta, metodo);
             $('modalTicket').classList.remove('hidden');
         }
 
         function mostrarTicketPorVentaSingle(id) {
             const p = productos.find(item => item.id == id);
             if (!p) return;
-            generarHtmlTicket([p], p.fechaVenta || new Date().toLocaleDateString('es-MX'), p.precioVenta || 0);
+            generarHtmlTicket([p], p.fechaVenta || new Date().toLocaleDateString('es-MX'), p.precioVenta || 0, p.metodoPago || 'Efectivo');
             $('modalTicket').classList.remove('hidden');
         }
 
-        function generarHtmlTicket(items, fecha, total) {
+        function generarHtmlTicket(items, fecha, total, metodo) {
             let detalleHtml = `
                 <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px;">TU BAZAR CULIACÁN</div>
                 <div style="text-align: center; font-size: 12px; margin-bottom: 8px;">Comprobante de Venta</div>
                 <div><b>Fecha:</b> ${fecha}</div>
+                <div><b>Pago:</b> ${metodo}</div>
                 <div style="border-top: 1px dashed #5a5344; margin: 6px 0;"></div>
             `;
 
-            items.forEach(item => {
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
                 detalleHtml += `<div><b>[${item.codigo}]</b> ${item.nombre}<br><span style="float: right;">$${(item.precioVenta || 0).toFixed(2)}</span></div><div style="clear:both; margin-bottom: 4px;"></div>`;
-            });
+            }
 
             detalleHtml += `
                 <div style="border-top: 2px dashed #5a5344; margin-top: 8px; padding-top: 6px; font-weight: bold; font-size: 16px; text-align: right;">TOTAL: $${total.toFixed(2)}</div>
@@ -739,8 +842,9 @@
         }
 
         function toggleSeleccionEtiqueta(id) {
-            if (etiquetasSeleccionadasIds.includes(id)) {
-                etiquetasSeleccionadasIds = etiquetasSeleccionadasIds.filter(itemId => itemId !== id);
+            const idx = etiquetasSeleccionadasIds.indexOf(id);
+            if (idx > -1) {
+                etiquetasSeleccionadasIds.splice(idx, 1);
             } else {
                 etiquetasSeleccionadasIds.push(id);
             }
@@ -749,8 +853,7 @@
 
         function actualizarBotonEtiquetasLote() {
             const btn = $('btnEtiquetasLote');
-            const countSpan = $('numSeleccionadas');
-            countSpan.textContent = etiquetasSeleccionadasIds.length;
+            $('numSeleccionadas').textContent = etiquetasSeleccionadasIds.length;
             if (etiquetasSeleccionadasIds.length > 0) {
                 btn.classList.remove('hidden');
             } else {
@@ -763,12 +866,11 @@
 
             const contenedor = $('contenedorEtiquetasImpresion');
             contenedor.innerHTML = '';
-
             const urlBase = window.location.href.split('?')[0];
 
-            etiquetasSeleccionadasIds.forEach((id, index) => {
-                const p = productos.find(item => item.id == id);
-                if (!p) return;
+            for (let i = 0; i < etiquetasSeleccionadasIds.length; i++) {
+                const p = productos.find(item => item.id == etiquetasSeleccionadasIds[i]);
+                if (!p) continue;
 
                 const etiquetaDiv = document.createElement('div');
                 etiquetaDiv.className = "bg-white p-3 rounded-2xl border-2 border-arena-800 text-center space-y-1 my-2 inline-block shadow-sm";
@@ -793,12 +895,12 @@
                             <div style="font-weight: 900; font-size: 15px; color: #16a34a; line-height: 1;">$${(p.precioVenta || 0).toFixed(2)}</div>
                         </div>
                     </div>
-                    <div id="qr_lote_${index}" style="display: flex; justify-content: center; margin: 3px 0;"></div>
+                    <div id="qr_lote_${i}" style="display: flex; justify-content: center; margin: 3px 0;"></div>
                 `;
 
                 contenedor.appendChild(etiquetaDiv);
 
-                new QRCode(document.getElementById(`qr_lote_${index}`), {
+                new QRCode(document.getElementById(`qr_lote_${i}`), {
                     text: `${urlBase}?item=${p.id}`,
                     width: 65,
                     height: 65,
@@ -806,7 +908,7 @@
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.M
                 });
-            });
+            }
 
             $('modalEtiquetasLote').classList.remove('hidden');
         }
@@ -841,12 +943,13 @@
                     precioVenta,
                     estado: 'Disponible',
                     fechaVenta: null,
-                    ventaId: null
+                    ventaId: null,
+                    metodoPago: 'Efectivo'
                 });
                 limpiarFormulario();
             }
 
-            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            guardarAutomatico();
             actualizarFiltroCategorias();
             sugerirSiguienteCodigo();
             renderizar();
@@ -893,11 +996,14 @@
                 if (p.id === id) {
                     p.estado = p.estado === 'Disponible' ? 'Vendido' : 'Disponible';
                     p.fechaVenta = p.estado === 'Vendido' ? hoy : null;
-                    if (p.estado === 'Disponible') p.ventaId = null;
+                    if (p.estado === 'Disponible') {
+                        p.ventaId = null;
+                        p.metodoPago = 'Efectivo';
+                    }
                 }
                 return p;
             });
-            localStorage.setItem('bazar_productos', JSON.stringify(productos));
+            guardarAutomatico();
             actualizarFiltroCategorias();
             renderizar();
         }
@@ -907,7 +1013,7 @@
                 productos = productos.filter(p => p.id !== id);
                 carritoIds = carritoIds.filter(itemId => itemId !== id);
                 etiquetasSeleccionadasIds = etiquetasSeleccionadasIds.filter(itemId => itemId !== id);
-                localStorage.setItem('bazar_productos', JSON.stringify(productos));
+                guardarAutomatico();
                 actualizarBotonEtiquetasLote();
                 actualizarFiltroCategorias();
                 sugerirSiguienteCodigo();
@@ -917,20 +1023,18 @@
 
         function actualizarFiltroCategorias() {
             const categorias = [...new Set(productos.map(p => p.categoria || 'General'))].sort();
-            
             const selectCat = $('selectFiltroCat');
             const actual = selectCat.value;
             selectCat.innerHTML = '<option value="">Todas las categorías</option>' + 
                 categorias.map(cat => `<option value="${cat}" ${cat === actual ? 'selected' : ''}>${cat}</option>`).join('');
-
-            const selectRapido = $('selectCategoriaRapida');
-            selectRapido.innerHTML = '<option value="">📁</option>' + 
-                categorias.map(cat => `<option value="${cat}">${cat}</option>`).join('');
         }
 
         function actualizarFinanzas() {
-            const inversion = gastos.reduce((acc, g) => acc + (g.monto || 0), 0);
-            const ingresos = productos.filter(p => p.estado === 'Vendido').reduce((acc, p) => acc + (p.precioVenta || 0), 0);
+            let inversion = 0, ingresos = 0;
+            for (let i = 0; i < gastos.length; i++) inversion += (gastos[i].monto || 0);
+            for (let i = 0; i < productos.length; i++) {
+                if (productos[i].estado === 'Vendido') ingresos += (productos[i].precioVenta || 0);
+            }
             const ganancia = ingresos - inversion;
 
             $('totalInversion').textContent = `$${inversion.toFixed(2)}`;
@@ -942,127 +1046,130 @@
         function renderizar() {
             const texto = $('inputBuscador').value.toLowerCase().trim();
             const catFiltro = $('selectFiltroCat').value;
+            const tbody = $('inventoryTableBody');
+            tbody.innerHTML = '';
 
-            if (vistaActual === 'disponible') {
-                $('tableHeader').innerHTML = `
-                    <th class="py-3 px-2 w-10 text-center">✓</th>
-                    <th class="py-3 px-3">Código</th>
-                    <th class="py-3 px-3">Artículo</th>
-                    <th class="py-3 px-3">Cat.</th>
-                    <th class="py-3 px-3">Costo de Tienda</th>
-                    <th class="py-3 px-3">Precio</th>
-                    <th class="py-3 px-3 text-right">Acciones</th>
-                `;
+            requestAnimationFrame(() => {
+                if (vistaActual === 'disponible') {
+                    $('tableHeader').innerHTML = `
+                        <th class="py-3 px-2 w-10 text-center">✓</th>
+                        <th class="py-3 px-3">Código</th>
+                        <th class="py-3 px-3">Artículo</th>
+                        <th class="py-3 px-3">Cat.</th>
+                        <th class="py-3 px-3">Costo de Tienda</th>
+                        <th class="py-3 px-3">Precio</th>
+                        <th class="py-3 px-3 text-right">Acciones</th>
+                    `;
 
-                const lista = productos.filter(p => {
-                    const matchEstado = p.estado === 'Disponible';
-                    const matchTexto = (p.codigo || '').toLowerCase().includes(texto) || (p.nombre || '').toLowerCase().includes(texto);
-                    const matchCat = catFiltro === "" || (p.categoria || 'General') === catFiltro;
-                    return matchEstado && matchTexto && matchCat;
-                });
+                    const lista = productos.filter(p => {
+                        const matchEstado = p.estado === 'Disponible';
+                        const matchTexto = (p.codigo || '').toLowerCase().includes(texto) || (p.nombre || '').toLowerCase().includes(texto);
+                        const matchCat = catFiltro === "" || (p.categoria || 'General') === catFiltro;
+                        return matchEstado && matchTexto && matchCat;
+                    });
 
-                $('contadorPiezas').textContent = lista.length === 1 ? 'Mostrando 1 artículo' : `Mostrando ${lista.length} artículos`;
+                    $('contadorPiezas').textContent = lista.length === 1 ? 'Mostrando 1 artículo' : `Mostrando ${lista.length} artículos`;
 
-                if (lista.length === 0) {
-                    $('emptyState').classList.remove('hidden');
-                    $('inventoryTableBody').innerHTML = '';
-                } else {
-                    $('emptyState').classList.add('hidden');
-                    $('inventoryTableBody').innerHTML = lista.map(p => {
-                        const seleccionadoCarrito = carritoIds.includes(p.id);
-                        const seleccionadoEtiqueta = etiquetasSeleccionadasIds.includes(p.id);
-                        return `
-                            <tr class="hover:bg-arena-50 transition ${seleccionadoCarrito ? 'bg-green-50/60' : ''}">
-                                <td class="py-4 px-2 text-center">
-                                    <input type="checkbox" onclick="toggleSeleccionEtiqueta(${p.id})" ${seleccionadoEtiqueta ? 'checked' : ''} class="w-5 h-5 accent-terracota-600 cursor-pointer">
-                                </td>
-                                <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
-                                <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
-                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
-                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
-                                <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
-                                <td class="py-4 px-3 text-right">
-                                    <div class="inline-flex items-center gap-1.5 justify-end">
-                                        <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
-                                            ${seleccionadoCarrito ? '✓ Venta' : '🛒 Venta'}
-                                        </button>
-                                        <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
-                                        <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
-            } else {
-                // Vista de Vendidos
-                $('tableHeader').innerHTML = `
-                    <th class="py-3 px-3">Fecha / Venta</th>
-                    <th class="py-3 px-3">Artículos Vendidos</th>
-                    <th class="py-3 px-3">Total Venta</th>
-                    <th class="py-3 px-3 text-right">Opciones</th>
-                `;
-
-                const vendidos = productos.filter(p => p.estado === 'Vendido');
-                let gruposMap = {};
-                
-                vendidos.forEach(p => {
-                    let key = p.ventaId || ('single_' + p.id);
-                    if (!gruposMap[key]) {
-                        gruposMap[key] = { fecha: p.fechaVenta || 'Antiguo', items: [], total: 0, ventaId: p.ventaId || null, singleId: p.id };
-                    }
-                    gruposMap[key].items.push(p);
-                    gruposMap[key].total += (p.precioVenta || 0);
-                });
-
-                let gruposArray = Object.values(gruposMap);
-
-                if (texto) {
-                    gruposArray = gruposArray.filter(g => g.items.some(i => (i.codigo || '').toLowerCase().includes(texto) || (i.nombre || '').toLowerCase().includes(texto)));
-                }
-
-                $('contadorPiezas').textContent = gruposArray.length === 1 ? 'Mostrando 1 venta' : `Mostrando ${gruposArray.length} ventas`;
-                $('btnEtiquetasLote').classList.add('hidden');
-
-                if (gruposArray.length === 0) {
-                    $('emptyState').classList.remove('hidden');
-                    $('inventoryTableBody').innerHTML = '';
-                } else {
-                    $('emptyState').classList.add('hidden');
-                    $('inventoryTableBody').innerHTML = gruposArray.map(g => {
-                        let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-bold">($${(i.precioVenta || 0).toFixed(2)})</span>`).join('<br>');
-                        let btnAccionTicket = '';
-
-                        if (g.ventaId) {
-                            btnAccionTicket = `<button type="button" onclick="mostrarTicketPorVenta('${g.ventaId}')" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
-                        } else {
-                            btnAccionTicket = `<button type="button" onclick="mostrarTicketPorVentaSingle(${g.singleId})" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
+                    if (lista.length === 0) {
+                        $('emptyState').classList.remove('hidden');
+                    } else {
+                        $('emptyState').classList.add('hidden');
+                        let html = '';
+                        for (let i = 0; i < lista.length; i++) {
+                            const p = lista[i];
+                            const seleccionadoCarrito = carritoIds.includes(p.id);
+                            const seleccionadoEtiqueta = etiquetasSeleccionadasIds.includes(p.id);
+                            html += `
+                                <tr class="hover:bg-arena-50 transition ${seleccionadoCarrito ? 'bg-green-50/60' : ''}">
+                                    <td class="py-4 px-2 text-center">
+                                        <input type="checkbox" onclick="toggleSeleccionEtiqueta(${p.id})" ${seleccionadoEtiqueta ? 'checked' : ''} class="w-5 h-5 accent-terracota-600 cursor-pointer">
+                                    </td>
+                                    <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
+                                    <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
+                                    <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
+                                    <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
+                                    <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
+                                    <td class="py-4 px-3 text-right">
+                                        <div class="inline-flex items-center gap-1.5 justify-end">
+                                            <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
+                                                ${seleccionadoCarrito ? '✓ Venta' : '🛒 Venta'}
+                                            </button>
+                                            <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
+                                            <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
                         }
+                        tbody.innerHTML = html;
+                    }
+                } else {
+                    $('tableHeader').innerHTML = `
+                        <th class="py-3 px-3">Fecha / Venta</th>
+                        <th class="py-3 px-3">Artículos Vendidos</th>
+                        <th class="py-3 px-3">Total Venta</th>
+                        <th class="py-3 px-3 text-right">Opciones</th>
+                    `;
 
-                        let botonesDevolucion = g.items.map(i => `<button type="button" onclick="cambiarEstadoIndividual(${i.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-sm">↩️ Devolver [${i.codigo}]</button>`).join(' ');
+                    const vendidos = productos.filter(p => p.estado === 'Vendido');
+                    let gruposMap = {};
+                    
+                    for (let i = 0; i < vendidos.length; i++) {
+                        const p = vendidos[i];
+                        let key = p.ventaId || ('single_' + p.id);
+                        if (!gruposMap[key]) {
+                            gruposMap[key] = { fecha: p.fechaVenta || 'Antiguo', items: [], total: 0, ventaId: p.ventaId || null, singleId: p.id, metodo: p.metodoPago || 'Efectivo' };
+                        }
+                        gruposMap[key].items.push(p);
+                        gruposMap[key].total += (p.precioVenta || 0);
+                    }
 
-                        return `
-                            <tr class="hover:bg-arena-50 transition border-b border-arena-200">
-                                <td class="py-4 px-3 font-extrabold text-terracota-700 text-base align-top">${g.fecha}</td>
-                                <td class="py-4 px-3 text-gray-900 text-sm align-top space-y-1.5">${listaNombres}</td>
-                                <td class="py-4 px-3 font-extrabold text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
-                                <td class="py-4 px-3 text-right align-top">
-                                    <div class="flex flex-col items-end gap-2.5">
-                                        <div class="flex items-center gap-2">
-                                            ${btnAccionTicket}
-                                            <button type="button" onclick="eliminarProducto(${g.items[0].id})" class="bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm">🗑️ Borrar</button>
+                    let gruposArray = Object.values(gruposMap);
+                    if (texto) {
+                        gruposArray = gruposArray.filter(g => g.items.some(i => (i.codigo || '').toLowerCase().includes(texto) || (i.nombre || '').toLowerCase().includes(texto)));
+                    }
+
+                    $('contadorPiezas').textContent = gruposArray.length === 1 ? 'Mostrando 1 venta' : `Mostrando ${gruposArray.length} ventas`;
+                    $('btnEtiquetasLote').classList.add('hidden');
+
+                    if (gruposArray.length === 0) {
+                        $('emptyState').classList.remove('hidden');
+                    } else {
+                        $('emptyState').classList.add('hidden');
+                        let html = '';
+                        for (let i = 0; i < gruposArray.length; i++) {
+                            const g = gruposArray[i];
+                            let badgeMetodo = g.metodo === 'Transferencia' ? '<span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-extrabold">Transferencia</span>' : '<span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-extrabold">Efectivo</span>';
+                            let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-bold">($${(i.precioVenta || 0).toFixed(2)})</span>`).join('<br>');
+                            let btnAccionTicket = g.ventaId ? `<button type="button" onclick="mostrarTicketPorVenta('${g.ventaId}')" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>` : `<button type="button" onclick="mostrarTicketPorVentaSingle(${g.singleId})" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
+                            let botonesDevolucion = g.items.map(i => `<button type="button" onclick="cambiarEstadoIndividual(${i.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-sm">↩️ Devolver [${i.codigo}]</button>`).join(' ');
+
+                            html += `
+                                <tr class="hover:bg-arena-50 transition border-b border-arena-200">
+                                    <td class="py-4 px-3 font-extrabold text-terracota-700 text-base align-top">
+                                        ${g.fecha}<br>${badgeMetodo}
+                                    </td>
+                                    <td class="py-4 px-3 text-gray-900 text-sm align-top space-y-1.5">${listaNombres}</td>
+                                    <td class="py-4 px-3 font-extrabold text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
+                                    <td class="py-4 px-3 text-right align-top">
+                                        <div class="flex flex-col items-end gap-2.5">
+                                            <div class="flex items-center gap-2">
+                                                ${btnAccionTicket}
+                                                <button type="button" onclick="eliminarProducto(${g.items[0].id})" class="bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm">🗑️ Borrar</button>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1.5 justify-end pt-1 border-t border-arena-100 w-full">
+                                                ${botonesDevolucion}
+                                            </div>
                                         </div>
-                                        <div class="flex flex-wrap gap-1.5 justify-end pt-1 border-t border-arena-100 w-full">
-                                            ${botonesDevolucion}
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                        tbody.innerHTML = html;
+                    }
                 }
-            }
-            actualizarFinanzas();
+                actualizarFinanzas();
+            });
         }
     </script>
 </body>
