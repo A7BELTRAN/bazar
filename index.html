@@ -114,11 +114,11 @@
                 </div>
                 <div>
                     <label class="block text-sm font-black text-gray-700 mb-1.5">Costo Tienda ($)</label>
-                    <input type="number" step="0.01" id="inputCosto" onkeydown="verificarEnter(event)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
+                    <input type="number" step="0.01" min="0" id="inputCosto" onkeydown="verificarEnter(event)" onblur="formatearDecimal(this)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                 </div>
                 <div>
                     <label class="block text-sm font-black text-gray-700 mb-1.5">Precio Venta ($)</label>
-                    <input type="number" step="0.01" id="inputVenta" onkeydown="verificarEnter(event)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
+                    <input type="number" step="0.01" min="0" id="inputVenta" onkeydown="verificarEnter(event)" onblur="formatearDecimal(this)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                 </div>
                 <div class="sm:col-span-2 lg:col-span-4 flex gap-3 pt-3">
                     <button type="button" id="btnCancelarEdicion" onclick="cancelarEdicion()" class="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-4 px-4 rounded-2xl transition text-base hidden">
@@ -242,7 +242,7 @@
 
             <div id="seccionEfectivo" class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 mb-4 hidden text-left space-y-2.5">
                 <label class="block text-sm font-black text-gray-800">¿Con cuánto paga el cliente ($)?</label>
-                <input type="number" step="0.01" id="inputEfectivoRecibido" oninput="calcularCambio()" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl font-black text-lg bg-white">
+                <input type="number" step="0.01" min="0" id="inputEfectivoRecibido" oninput="calcularCambio()" onblur="formatearDecimal(this)" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl font-black text-lg bg-white">
                 <div class="flex justify-between items-center pt-1 text-sm font-black">
                     <span class="text-gray-600">Cambio a devolver:</span>
                     <span id="textoCambio" class="text-2xl font-black text-terracota-600">$0.00</span>
@@ -288,7 +288,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-black text-gray-700 mb-1">Monto ($)</label>
-                    <input type="number" step="0.01" id="gastoMonto" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl text-base font-bold bg-arena-50">
+                    <input type="number" step="0.01" min="0" id="gastoMonto" onblur="formatearDecimal(this)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl text-base font-bold bg-arena-50">
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" onclick="cerrarModalGastos()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-3.5 px-4 rounded-2xl transition text-base">Cancelar</button>
@@ -371,7 +371,7 @@
         </div>
     </div>
 
-    <!-- Lógica de la aplicación Ultra-Optimizada -->
+    <!-- Lógica de la aplicación con optimización total -->
     <script>
         let productos = JSON.parse(localStorage.getItem('bazar_productos')) || [];
         let gastos = JSON.parse(localStorage.getItem('bazar_gastos')) || [];
@@ -384,6 +384,11 @@
 
         const $ = id => document.getElementById(id);
 
+        // Formateador robusto para pesos mexicanos con comas y 2 decimales exactos
+        function formatearMoneda(monto) {
+            return Number(monto || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const itemId = urlParams.get('item');
@@ -391,14 +396,25 @@
                 requestAnimationFrame(() => {
                     const prod = productos.find(p => p.id == itemId);
                     if (prod) {
-                        alert(`📱 Artículo escaneado:\nCódigo: ${prod.codigo}\nNombre: ${prod.nombre}\nPrecio: $${(prod.precioVenta || 0).toFixed(2)}`);
+                        alert(`📱 Artículo escaneado:\nCódigo: ${prod.codigo}\nNombre: ${prod.nombre}\nPrecio: ${formatearMoneda(prod.precioVenta)}`);
                     }
                 });
             }
             actualizarFiltroCategorias();
             sugerirSiguienteCodigo();
             renderizar();
+            // Foco automático inicial en el buscador para máxima agilidad
+            $('inputBuscador').focus();
         });
+
+        function formatearDecimal(input) {
+            let val = parseFloat(input.value);
+            if (isNaN(val) || val < 0) {
+                input.value = '';
+            } else {
+                input.value = val.toFixed(2);
+            }
+        }
 
         function guardarAutomatico() {
             localStorage.setItem('bazar_productos', JSON.stringify(productos));
@@ -592,9 +608,9 @@
             }
 
             $('cortePiezas').textContent = `${contador} piezas`;
-            $('corteEfectivo').textContent = `$${totalEfectivo.toFixed(2)}`;
-            $('corteTransferencia').textContent = `$${totalTransferencia.toFixed(2)}`;
-            $('corteVentas').textContent = `$${(totalEfectivo + totalTransferencia).toFixed(2)}`;
+            $('corteEfectivo').textContent = formatearMoneda(totalEfectivo);
+            $('corteTransferencia').textContent = formatearMoneda(totalTransferencia);
+            $('corteVentas').textContent = formatearMoneda(totalEfectivo + totalTransferencia);
         }
 
         function cerrarCorteCaja() {
@@ -644,7 +660,7 @@
                             <span class="text-terracota-600 block text-xs font-bold">(${g.tipo})</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="font-black text-gray-800">$${(g.monto || 0).toFixed(2)}</span>
+                            <span class="font-black text-gray-800">${formatearMoneda(g.monto)}</span>
                             <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-600 font-black px-2.5 py-1 bg-red-50 rounded-lg">✕</button>
                         </div>
                     </div>
@@ -698,9 +714,12 @@
                 if (carritoIds.includes(p.id)) {
                     total += (p.precioVenta || 0);
                     itemsHtml += `
-                        <div class="flex justify-between items-center bg-green-800 px-3 py-1.5 rounded-xl font-bold">
-                            <span><b>[${p.codigo}]</b> ${p.nombre}</span>
-                            <span class="font-black text-green-200">$${(p.precioVenta || 0).toFixed(2)}</span>
+                        <div class="flex justify-between items-center bg-green-800 px-3 py-2 rounded-xl font-bold gap-2">
+                            <span class="truncate"><b>[${p.codigo}]</b> ${p.nombre}</span>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <span class="font-black text-green-200">${formatearMoneda(p.precioVenta)}</span>
+                                <button type="button" onclick="event.stopPropagation(); toggleCarrito(${p.id});" class="bg-red-600 hover:bg-red-700 text-white font-black px-2 py-0.5 rounded-lg text-xs" title="Quitar del carrito">✕</button>
+                            </div>
                         </div>
                     `;
                 }
@@ -716,7 +735,7 @@
             }
 
             $('carritoCantidad').textContent = carritoIds.length;
-            $('carritoTotal').textContent = `$${total.toFixed(2)}`;
+            $('carritoTotal').textContent = formatearMoneda(total);
         }
 
         function abrirModalCobro() {
@@ -725,10 +744,10 @@
             for (let i = 0, len = productos.length; i < len; i++) {
                 if (carritoIds.includes(productos[i].id)) total += (productos[i].precioVenta || 0);
             }
-            $('montoCobroModal').textContent = `$${total.toFixed(2)}`;
+            $('montoCobroModal').textContent = formatearMoneda(total);
             $('seccionEfectivo').classList.add('hidden');
             $('inputEfectivoRecibido').value = '';
-            $('textoCambio').textContent = '$0.00';
+            $('textoCambio').textContent = formatearMoneda(0);
             $('modalCobro').classList.remove('hidden');
         }
 
@@ -754,10 +773,10 @@
             const cambio = recibido - total;
 
             if (cambio >= 0) {
-                $('textoCambio').textContent = `$${cambio.toFixed(2)}`;
+                $('textoCambio').textContent = formatearMoneda(cambio);
                 $('textoCambio').className = "text-2xl font-black text-green-600";
             } else {
-                $('textoCambio').textContent = `Faltan $${Math.abs(cambio).toFixed(2)}`;
+                $('textoCambio').textContent = `Faltan ${formatearMoneda(Math.abs(cambio))}`;
                 $('textoCambio').className = "text-2xl font-black text-red-600";
             }
         }
@@ -823,11 +842,11 @@
 
             for (let i = 0, len = items.length; i < len; i++) {
                 const item = items[i];
-                detalleHtml += `<div><b>[${item.codigo}]</b> ${item.nombre}<br><span style="float: right;">$${(item.precioVenta || 0).toFixed(2)}</span></div><div style="clear:both; margin-bottom: 4px;"></div>`;
+                detalleHtml += `<div><b>[${item.codigo}]</b> ${item.nombre}<br><span style="float: right;">${formatearMoneda(item.precioVenta)}</span></div><div style="clear:both; margin-bottom: 4px;"></div>`;
             }
 
             detalleHtml += `
-                <div style="border-top: 2px dashed #5a5344; margin-top: 8px; padding-top: 6px; font-weight: bold; font-size: 16px; text-align: right;">TOTAL: $${total.toFixed(2)}</div>
+                <div style="border-top: 2px dashed #5a5344; margin-top: 8px; padding-top: 6px; font-weight: bold; font-size: 16px; text-align: right;">TOTAL: ${formatearMoneda(total)}</div>
                 <div style="text-align: center; font-size: 11px; margin-top: 10px;">¡Gracias por su compra!<br>Culiacán, Sinaloa</div>
             `;
 
@@ -884,12 +903,12 @@
                     <div style="background: #fdf8f6; border: 1px solid #fbe8e4; padding: 4px; border-radius: 6px; margin: 3px 0; display: flex; justify-content: space-around; align-items: center;">
                         <div>
                             <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; font-weight: bold;">Costo</div>
-                            <div style="font-weight: 800; font-size: 12px; color: #9ca3af; text-decoration: line-through;">$${(p.costo || 0).toFixed(2)}</div>
+                            <div style="font-weight: 800; font-size: 12px; color: #9ca3af; text-decoration: line-through;">${formatearMoneda(p.costo)}</div>
                         </div>
                         <div style="border-left: 1px solid #e6dfd1; height: 20px;"></div>
                         <div>
                             <div style="font-size: 8px; color: #b0573b; text-transform: uppercase; font-weight: 900;">Precio</div>
-                            <div style="font-weight: 900; font-size: 15px; color: #16a34a; line-height: 1;">$${(p.precioVenta || 0).toFixed(2)}</div>
+                            <div style="font-weight: 900; font-size: 15px; color: #16a34a; line-height: 1;">${formatearMoneda(p.precioVenta)}</div>
                         </div>
                     </div>
                     <div id="qr_lote_${i}" style="display: flex; justify-content: center; margin: 3px 0;"></div>
@@ -950,6 +969,8 @@
             actualizarFiltroCategorias();
             sugerirSiguienteCodigo();
             renderizar();
+            // Foco al buscador para registrar el siguiente artículo ágilmente
+            $('inputBuscador').focus();
         }
 
         function prepararEdicion(id) {
@@ -959,8 +980,8 @@
             $('inputCodigo').value = p.codigo || '';
             $('inputNombre').value = p.nombre || '';
             $('inputCategoria').value = p.categoria || '';
-            $('inputCosto').value = p.costo || 0;
-            $('inputVenta').value = p.precioVenta || 0;
+            $('inputCosto').value = (p.costo || 0).toFixed(2);
+            $('inputVenta').value = (p.precioVenta || 0).toFixed(2);
             
             $('editandoId').value = p.id;
             $('formTitulo').innerHTML = `<span>✏️</span> Editando Artículo: <span class="text-terracota-600">${p.codigo || ''}</span>`;
@@ -968,6 +989,7 @@
             $('btnGuardar').className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-black py-4 px-4 rounded-2xl transition text-base shadow-lg";
             $('btnCancelarEdicion').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            $('inputNombre').focus();
         }
 
         function cancelarEdicion() {
@@ -978,6 +1000,7 @@
             $('btnGuardar').textContent = "Guardar Artículo";
             $('btnGuardar').className = "w-full bg-terracota-600 hover:bg-terracota-700 text-white font-black py-4 px-4 rounded-2xl transition text-lg shadow-lg";
             $('btnCancelarEdicion').classList.add('hidden');
+            $('inputBuscador').focus();
         }
 
         function limpiarFormulario() {
@@ -1034,9 +1057,9 @@
             }
             const ganancia = ingresos - inversion;
 
-            $('totalInversion').textContent = `$${inversion.toFixed(2)}`;
-            $('totalIngresos').textContent = `$${ingresos.toFixed(2)}`;
-            $('totalGanancias').textContent = `$${ganancia.toFixed(2)}`;
+            $('totalInversion').textContent = formatearMoneda(inversion);
+            $('totalIngresos').textContent = formatearMoneda(ingresos);
+            $('totalGanancias').textContent = formatearMoneda(ganancia);
             $('totalGanancias').className = `text-3xl font-black mt-1 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
         }
 
@@ -1091,8 +1114,8 @@
                                     <td class="py-4 px-3 font-black text-terracota-700 text-base">${p.codigo || ''}</td>
                                     <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
                                     <td class="py-4 px-3 text-gray-700 font-bold text-sm">${p.categoria || 'General'}</td>
-                                    <td class="py-4 px-3 text-gray-600 font-bold text-sm">$${(p.costo || 0).toFixed(2)}</td>
-                                    <td class="py-4 px-3 text-gray-900 font-black text-base">$${(p.precioVenta || 0).toFixed(2)}</td>
+                                    <td class="py-4 px-3 text-gray-600 font-bold text-sm">${formatearMoneda(p.costo)}</td>
+                                    <td class="py-4 px-3 text-gray-900 font-black text-base">${formatearMoneda(p.precioVenta)}</td>
                                     <td class="py-4 px-3 text-right">
                                         <div class="inline-flex items-center gap-2 justify-end">
                                             <button type="button" onclick="toggleCarrito(${p.id})" class="text-xs ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white font-black px-4 py-2 rounded-xl shadow-sm transition">
@@ -1144,7 +1167,7 @@
                         for (let i = 0, len = gruposArray.length; i < len; i++) {
                             const g = gruposArray[i];
                             let badgeMetodo = g.metodo === 'Transferencia' ? '<span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-black">Transferencia</span>' : '<span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-black">Efectivo</span>';
-                            let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-black">($${(i.precioVenta || 0).toFixed(2)})</span>`).join('<br>');
+                            let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-black">(${formatearMoneda(i.precioVenta)})</span>`).join('<br>');
                             let btnAccionTicket = g.ventaId ? `<button type="button" onclick="mostrarTicketPorVenta('${g.ventaId}')" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>` : `<button type="button" onclick="mostrarTicketPorVentaSingle(${g.singleId})" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
                             let botonesDevolucion = g.items.map(i => `<button type="button" onclick="cambiarEstadoIndividual(${i.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm">↩️ Devolver [${i.codigo}]</button>`).join(' ');
 
@@ -1154,7 +1177,7 @@
                                         ${g.fecha}<br>${badgeMetodo}
                                     </td>
                                     <td class="py-4 px-3 text-gray-900 text-sm align-top space-y-1.5">${listaNombres}</td>
-                                    <td class="py-4 px-3 font-black text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
+                                    <td class="py-4 px-3 font-black text-green-700 text-base align-top">${formatearMoneda(g.total)}</td>
                                     <td class="py-4 px-3 text-right align-top">
                                         <div class="flex flex-col items-end gap-2.5">
                                             <div class="flex items-center gap-2">
