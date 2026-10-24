@@ -15,40 +15,40 @@
             theme: {
                 extend: {
                     colors: {
-                        terracota: { 50: '#fdf8f6', 100: '#fbe8e4', 500: '#c86d51', 600: '#b0573b', 700: '#92452e' },
-                        arena: { 100: '#f4f1ea', 200: '#e6dfd1', 800: '#2d2a22' }
+                        terracota: { 50: '#fdf8f6', 100: '#fbe8e4', 500: '#c86d51', 600: '#b0573b', 700: '#92452e', 800: '#7a3924' },
+                        arena: { 50: '#faf8f5', 100: '#f4f1ea', 200: '#e6dfd1', 800: '#2d2a22' }
                     }
                 }
             }
         }
     </script>
-    <!-- Reglas de impresión -->
+    <!-- Reglas de impresión optimizadas -->
     <style>
         @media print {
             body * { visibility: hidden !important; }
             header, main, section, #panelCarrito, #modalGastos, #modalCorteCaja, #modalScanner, #modalCobro { display: none !important; }
             #modalTicket, #modalTicket *, #modalEtiquetasLote, #modalEtiquetasLote * { visibility: visible !important; }
             #modalTicket, #modalEtiquetasLote { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; height: auto !important; background: white !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: none !important; }
-            #modalTicket > div, #modalEtiquetasLote > div { box-shadow: none !important; border: none !important; max-width: 100% !important; width: 100% !important; padding: 5px !important; }
+            #modalTicket > div, #modalEtiquetasLote > div { box-shadow: none !important; border: none !important; max-width: 100% !important; width: 100% !important; padding: 10px !important; }
             #modalTicket button, #modalEtiquetasLote button { display: none !important; }
             #contenidoTicketVisual, #contenedorEtiquetasImpresion { max-height: none !important; overflow: visible !important; border: none !important; background: white !important; }
             .grid-etiquetas-print { display: flex !important; flex-wrap: wrap !important; gap: 10px !important; justify-content: center !important; }
         }
     </style>
 </head>
-<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-36">
+<body class="bg-arena-100 text-arena-800 min-h-screen font-sans pb-40 text-base">
 
     <!-- Encabezado -->
-    <header class="bg-terracota-600 text-white shadow-md">
+    <header class="bg-terracota-700 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-4 py-6 text-center">
-            <h1 class="text-3xl font-extrabold tracking-wide">Tu bazar culiacán</h1>
-            <p class="text-terracota-100 text-base mt-1 font-medium">Control de inventario, ventas y ganancias</p>
+            <h1 class="text-3xl sm:text-4xl font-black tracking-wide">Tu bazar culiacán</h1>
+            <p class="text-terracota-100 text-base sm:text-lg font-bold mt-1">Control fácil de inventario y ventas</p>
             
             <div class="flex justify-center gap-4 mt-5">
-                <button type="button" onclick="exportarDatos()" class="bg-terracota-700 hover:bg-terracota-800 text-white text-sm font-bold px-4 py-3 rounded-xl shadow-md transition flex items-center gap-2">
+                <button type="button" onclick="exportarDatos()" class="bg-terracota-800 hover:bg-terracota-900 text-white font-extrabold px-5 py-3 rounded-2xl shadow transition text-base flex items-center gap-2 border border-terracota-600">
                     💾 Guardar Copia
                 </button>
-                <label class="bg-white hover:bg-arena-100 text-terracota-700 text-sm font-bold px-4 py-3 rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer">
+                <label class="bg-terracota-800 hover:bg-terracota-900 text-white font-extrabold px-5 py-3 rounded-2xl shadow transition text-base flex items-center gap-2 cursor-pointer border border-terracota-600">
                     📂 Cargar Copia
                     <input type="file" id="inputFile" accept=".json" onchange="importarDatos(event)" class="hidden">
                 </label>
@@ -58,76 +58,73 @@
 
     <main class="max-w-4xl mx-auto px-4 mt-6 space-y-6">
 
-        <!-- Panel Financiero y Corte por Rango de Fechas -->
-        <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-arena-200">
-                <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Inversión (Gastos)</p>
-                <div class="flex items-center justify-between mt-2">
-                    <p id="totalInversion" class="text-2xl font-extrabold text-gray-900">$0.00</p>
-                    <button type="button" onclick="abrirModalGastos()" class="bg-terracota-100 hover:bg-terracota-600 hover:text-white text-terracota-700 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
-                        ➕ Gasto
-                    </button>
-                </div>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-arena-200">
-                <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Ventas Totales</p>
-                <p id="totalIngresos" class="text-2xl font-extrabold text-terracota-600 mt-2">$0.00</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border-2 border-arena-200">
-                <p class="text-sm font-bold text-gray-600 uppercase tracking-wider">Ganancia Neta</p>
-                <p id="totalGanancias" class="text-2xl font-extrabold text-green-600 mt-2">$0.00</p>
-            </div>
-            <div class="bg-gradient-to-br from-terracota-600 to-terracota-700 text-white p-5 rounded-2xl shadow-md flex flex-col justify-between">
+        <!-- Panel Financiero -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-2 border-arena-200 flex flex-col justify-between">
                 <div>
-                    <p class="text-xs font-bold uppercase tracking-wider text-terracota-100">Reportes de Venta</p>
-                    <p class="text-base font-extrabold mt-1">Corte por Fechas</p>
+                    <p class="text-sm font-extrabold text-gray-500 uppercase">Inversión / Gastos</p>
+                    <p id="totalInversion" class="text-3xl font-black text-gray-900 mt-1">$0.00</p>
                 </div>
-                <button type="button" onclick="abrirCorteCaja()" class="mt-3 bg-white hover:bg-arena-100 text-terracota-700 font-extrabold text-xs py-2.5 px-3 rounded-xl shadow transition text-center">
-                    📊 Ver Reporte / Corte
+                <button type="button" onclick="abrirModalGastos()" class="mt-4 bg-terracota-100 hover:bg-terracota-600 hover:text-white text-terracota-800 font-black py-2.5 px-4 rounded-xl transition text-sm text-center">
+                    ➕ Registrar Gasto
                 </button>
+            </div>
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-2 border-arena-200 flex flex-col justify-between">
+                <div>
+                    <p class="text-sm font-extrabold text-gray-500 uppercase">Ventas Totales</p>
+                    <p id="totalIngresos" class="text-3xl font-black text-terracota-600 mt-1">$0.00</p>
+                </div>
+                <button type="button" onclick="abrirCorteCaja()" class="mt-4 bg-arena-100 hover:bg-arena-200 text-gray-800 font-black py-2.5 px-4 rounded-xl transition text-sm text-center">
+                    📊 Ver Corte de Caja
+                </button>
+            </div>
+            <div class="bg-white p-5 rounded-3xl shadow-sm border-2 border-arena-200 flex flex-col justify-between">
+                <div>
+                    <p class="text-sm font-extrabold text-gray-500 uppercase">Ganancia Neta</p>
+                    <p id="totalGanancias" class="text-3xl font-black text-green-600 mt-1">$0.00</p>
+                </div>
+                <span class="text-xs font-bold text-gray-400 mt-4">Dinero limpio ganado</span>
             </div>
         </section>
 
-        <!-- Formulario para Agregar / Editar Artículo -->
-        <section class="bg-white p-6 rounded-2xl shadow-sm border-2 border-arena-200">
-            <h2 id="formTitulo" class="text-xl font-extrabold text-gray-900 mb-4 flex items-center gap-2">
-                <span>📦</span> Agregar Artículo al Inventario
+        <!-- Formulario -->
+        <section class="bg-white p-6 sm:p-7 rounded-3xl shadow-sm border-2 border-arena-200">
+            <h2 id="formTitulo" class="text-xl font-black text-gray-900 mb-4 flex items-center gap-2 border-b-2 border-arena-100 pb-3">
+                <span>📦</span> Nuevo Artículo en el Inventario
             </h2>
             <input type="hidden" id="editandoId" value="">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Código</label>
-                    <input type="text" id="inputCodigo" onkeydown="verificarEnter(event)" placeholder="Ej. P1-01" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <label class="block text-sm font-black text-gray-700 mb-1.5">Código</label>
+                    <input type="text" id="inputCodigo" onkeydown="verificarEnter(event)" placeholder="Ej. P1-01" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                 </div>
                 <div class="sm:col-span-2 lg:col-span-3">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre / Descripción del Artículo</label>
-                    <input type="text" id="inputNombre" onkeydown="verificarEnter(event)" placeholder="Ej. Blusa floreada" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <label class="block text-sm font-black text-gray-700 mb-1.5">Nombre / Descripción del Artículo</label>
+                    <input type="text" id="inputNombre" onkeydown="verificarEnter(event)" placeholder="Ej. Blusa floreada, Mueble..." class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Categoría</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="inputCategoria" onkeydown="verificarEnter(event)" placeholder="Ej. Ropa, Zapatos" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
-                    </div>
+                    <label class="block text-sm font-black text-gray-700 mb-1.5">Categoría</label>
+                    <input type="text" id="inputCategoria" onkeydown="verificarEnter(event)" placeholder="Ej. Ropa, Hogar" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                     <div class="flex flex-wrap gap-1.5 mt-2">
-                        <button type="button" onclick="fijarCategoria('Ropa')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">👗 Ropa</button>
-                        <button type="button" onclick="fijarCategoria('Zapatos')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">👠 Zapatos</button>
-                        <button type="button" onclick="fijarCategoria('Accesorios')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">👜 Accesorios</button>
-                        <button type="button" onclick="fijarCategoria('Hogar')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-700 font-bold px-2.5 py-1 rounded-lg border border-arena-200 transition">🏡 Hogar</button>
+                        <button type="button" onclick="fijarCategoria('Ropa')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-800 font-extrabold px-3 py-1.5 rounded-xl border border-arena-200 transition">👗 Ropa</button>
+                        <button type="button" onclick="fijarCategoria('Zapatos')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-800 font-extrabold px-3 py-1.5 rounded-xl border border-arena-200 transition">👠 Zapatos</button>
+                        <button type="button" onclick="fijarCategoria('Accesorios')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-800 font-extrabold px-3 py-1.5 rounded-xl border border-arena-200 transition">👜 Accesorios</button>
+                        <button type="button" onclick="fijarCategoria('Hogar')" class="text-xs bg-arena-100 hover:bg-terracota-100 text-terracota-800 font-extrabold px-3 py-1.5 rounded-xl border border-arena-200 transition">🏡 Hogar</button>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Costo de Tienda ($)</label>
-                    <input type="number" step="0.01" id="inputCosto" onkeydown="verificarEnter(event)" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <label class="block text-sm font-black text-gray-700 mb-1.5">Costo Tienda ($)</label>
+                    <input type="number" step="0.01" id="inputCosto" onkeydown="verificarEnter(event)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Precio de Venta ($)</label>
-                    <input type="number" step="0.01" id="inputVenta" onkeydown="verificarEnter(event)" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <label class="block text-sm font-black text-gray-700 mb-1.5">Precio Venta ($)</label>
+                    <input type="number" step="0.01" id="inputVenta" onkeydown="verificarEnter(event)" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
                 </div>
-                <div class="sm:col-span-2 lg:col-span-4 flex gap-3 pt-2">
-                    <button type="button" id="btnCancelarEdicion" onclick="cancelarEdicion()" class="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3.5 px-4 rounded-xl transition text-base hidden">
+                <div class="sm:col-span-2 lg:col-span-4 flex gap-3 pt-3">
+                    <button type="button" id="btnCancelarEdicion" onclick="cancelarEdicion()" class="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-4 px-4 rounded-2xl transition text-base hidden">
                         Cancelar
                     </button>
-                    <button type="button" id="btnGuardar" onclick="guardarProducto()" class="w-full bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md">
+                    <button type="button" id="btnGuardar" onclick="guardarProducto()" class="w-full bg-terracota-600 hover:bg-terracota-700 text-white font-black py-4 px-4 rounded-2xl transition text-lg shadow-lg">
                         Guardar Artículo
                     </button>
                 </div>
@@ -135,67 +132,63 @@
         </section>
 
         <!-- Recuadro de Inventario -->
-        <section class="bg-white p-6 rounded-2xl shadow-sm border-2 border-arena-200">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
-                <h2 id="tituloSeccion" class="text-xl font-extrabold text-gray-900 flex items-center gap-2">
+        <section class="bg-white p-6 sm:p-7 rounded-3xl shadow-sm border-2 border-arena-200">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                <h2 id="tituloSeccion" class="text-xl font-black text-gray-900 flex items-center gap-2">
                     <span>📋</span> Inventario Disponible
                 </h2>
                 <!-- Pestañas -->
-                <div class="bg-arena-100 p-1.5 rounded-xl flex gap-2 w-full sm:w-auto">
-                    <button type="button" id="tabDisponible" onclick="cambiarVista('disponible')" class="flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm">
+                <div class="bg-arena-100 p-1.5 rounded-2xl flex gap-2 w-full sm:w-auto border-2 border-arena-200">
+                    <button type="button" id="tabDisponible" onclick="cambiarVista('disponible')" class="flex-1 sm:flex-none text-sm px-5 py-3 rounded-xl font-black transition bg-terracota-600 text-white shadow-sm">
                         Disponibles
                     </button>
-                    <button type="button" id="tabVendidos" onclick="cambiarVista('vendidos')" class="flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black">
+                    <button type="button" id="tabVendidos" onclick="cambiarVista('vendidos')" class="flex-1 sm:flex-none text-sm px-5 py-3 rounded-xl font-black transition text-gray-700 hover:text-black">
                         Vendidos
                     </button>
                 </div>
             </div>
 
-            <!-- Contador y Botón Escáner QR / Lote Etiquetas -->
+            <!-- Contadores y Botones -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                <span id="contadorPiezas" class="inline-block bg-terracota-50 text-terracota-700 font-bold text-sm px-3 py-1.5 rounded-lg border border-terracota-100">
+                <span id="contadorPiezas" class="inline-block bg-terracota-50 text-terracota-800 font-black text-sm px-4 py-2 rounded-xl border border-terracota-200">
                     Mostrando 0 artículos
                 </span>
-                <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="abrirEscanerQR()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
+                <div class="flex flex-wrap gap-2.5 w-full sm:w-auto">
+                    <button type="button" onclick="abrirEscanerQR()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white font-black text-sm px-5 py-3 rounded-2xl shadow transition flex items-center justify-center gap-2">
                         📷 Escanear QR
                     </button>
-                    <button type="button" id="btnEtiquetasLote" onclick="mostrarEtiquetasSeleccionadas()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm px-4 py-2 rounded-xl shadow-sm transition hidden flex items-center gap-2">
-                        🏷️ Imprimir Etiquetas Seleccionadas (<span id="numSeleccionadas">0</span>)
+                    <button type="button" id="btnEtiquetasLote" onclick="mostrarEtiquetasSeleccionadas()" class="flex-1 sm:flex-none bg-amber-600 hover:bg-amber-700 text-white font-black text-sm px-5 py-3 rounded-2xl shadow transition hidden flex items-center justify-center gap-2">
+                        🏷️ Imprimir Etiquetas (<span id="numSeleccionadas">0</span>)
                     </button>
                 </div>
             </div>
 
             <!-- Buscador y Filtro -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-                <div>
-                    <input type="text" id="inputBuscador" oninput="renderizar()" placeholder="🔍 Buscar por código o nombre..." class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
-                </div>
-                <div>
-                    <select id="selectFiltroCat" onchange="renderizar()" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium bg-white">
-                        <option value="">Todas las categorías</option>
-                    </select>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-5">
+                <input type="text" id="inputBuscador" oninput="renderizarOptimizado()" placeholder="🔍 Buscar por código o nombre..." class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
+                <select id="selectFiltroCat" onchange="renderizar()" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-bold bg-arena-50">
+                    <option value="">Todas las categorías</option>
+                </select>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-base">
                     <thead>
-                        <tr id="tableHeader" class="border-b-2 border-arena-200 text-gray-600 text-sm uppercase tracking-wider font-extrabold">
-                            <th class="py-3 px-2 w-10 text-center">✓</th>
+                        <tr id="tableHeader" class="border-b-2 border-arena-200 text-gray-600 text-xs uppercase tracking-wider font-black">
+                            <th class="py-3 px-3 w-12 text-center">✓</th>
                             <th class="py-3 px-3">Código</th>
                             <th class="py-3 px-3">Artículo</th>
                             <th class="py-3 px-3">Cat.</th>
-                            <th class="py-3 px-3">Costo de Tienda</th>
+                            <th class="py-3 px-3">Costo</th>
                             <th class="py-3 px-3">Precio</th>
                             <th class="py-3 px-3 text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="inventoryTableBody" class="divide-y divide-arena-100">
+                    <tbody id="inventoryTableBody" class="divide-y divide-arena-200">
                         <!-- Se llena dinámicamente -->
                     </tbody>
                 </table>
-                <div id="emptyState" class="text-center py-10 text-gray-400 text-base font-medium hidden">
+                <div id="emptyState" class="text-center py-12 text-gray-400 text-base font-bold hidden">
                     No se encontraron artículos con esos criterios.
                 </div>
             </div>
@@ -203,177 +196,177 @@
 
     </main>
 
-    <!-- Carrito Flotante Fijo en la Base con Acordeón Desplegable -->
-    <section id="panelCarrito" class="fixed bottom-0 left-0 right-0 bg-green-900 text-white shadow-2xl border-t-4 border-green-500 hidden z-40 transition-all duration-300">
-        <div id="carritoDesplegable" class="max-w-4xl mx-auto px-4 pt-3 pb-1 max-h-52 overflow-y-auto space-y-2 border-b border-green-800 hidden">
-            <p class="text-xs font-bold uppercase tracking-wider text-green-300">Artículos seleccionados para venta:</p>
-            <div id="listaItemsCarrito" class="space-y-1.5 text-sm"></div>
+    <!-- Carrito Flotante Fijo -->
+    <section id="panelCarrito" class="fixed bottom-0 left-0 right-0 bg-green-900 text-white shadow-2xl border-t-4 border-green-400 hidden z-40 transition-all duration-300">
+        <div id="carritoDesplegable" class="max-w-4xl mx-auto px-4 pt-4 pb-2 max-h-56 overflow-y-auto space-y-2 border-b border-green-800 hidden">
+            <p class="text-xs font-black uppercase tracking-wider text-green-300">Artículos seleccionados para venta:</p>
+            <div id="listaItemsCarrito" class="space-y-1.5 text-sm font-bold"></div>
         </div>
         <div class="max-w-4xl mx-auto p-4 flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start cursor-pointer select-none" onclick="toggleAcordeonCarrito()">
-                <span class="text-lg font-extrabold flex items-center gap-2">
-                    🛒 <span id="carritoCantidad">0</span> artículos seleccionados
-                    <span id="iconoFlecha" class="text-xs transition-transform transform inline-block">▼</span>
+                <span class="text-lg font-black flex items-center gap-2">
+                    🛒 <span id="carritoCantidad">0</span> seleccionados
+                    <span id="iconoFlecha" class="text-sm transition-transform transform inline-block">▼</span>
                 </span>
-                <button type="button" onclick="event.stopPropagation(); vaciarCarrito();" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition sm:hidden">Cancelar</button>
+                <button type="button" onclick="event.stopPropagation(); vaciarCarrito();" class="text-xs bg-red-600 hover:bg-red-700 text-white font-extrabold px-3 py-2 rounded-xl transition sm:hidden">Cancelar</button>
             </div>
             <div class="flex items-center gap-4 w-full sm:w-auto justify-between">
-                <button type="button" onclick="vaciarCarrito()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg transition hidden sm:inline-block">Cancelar</button>
-                <p class="text-xl font-extrabold">Total: <span id="carritoTotal" class="text-green-300">$0.00</span></p>
-                <button type="button" onclick="abrirModalCobro()" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-6 py-3 rounded-xl shadow-lg transition text-base">
+                <button type="button" onclick="vaciarCarrito()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-extrabold px-3 py-2 rounded-xl transition hidden sm:inline-block">Cancelar</button>
+                <p class="text-xl font-black">Total: <span id="carritoTotal" class="text-green-300">$0.00</span></p>
+                <button type="button" onclick="abrirModalCobro()" class="bg-green-500 hover:bg-green-600 text-white font-black px-6 py-3.5 rounded-2xl shadow-lg transition text-base">
                     ✅ Cobrar y Ticket
                 </button>
             </div>
         </div>
     </section>
 
-    <!-- Modal para Seleccionar Forma de Pago y Calculadora de Cambio -->
+    <!-- Modal Cobro / Cambio -->
     <div id="modalCobro" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
-            <h3 class="text-xl font-extrabold text-gray-900 mb-1">💳 Forma de Pago</h3>
-            <p class="text-xs font-semibold text-gray-500 mb-4">Selecciona cómo pagó el cliente</p>
+        <div class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-xl font-black text-gray-900 mb-1">💳 Forma de Pago</h3>
+            <p class="text-sm font-bold text-gray-500 mb-4">Selecciona cómo pagó el cliente</p>
 
-            <div class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 text-center mb-4">
-                <p class="text-xs font-bold text-gray-500 uppercase">Total a Cobrar</p>
-                <p id="montoCobroModal" class="text-3xl font-extrabold text-green-600 mt-1">$0.00</p>
+            <div class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 text-center mb-5">
+                <p class="text-xs font-black text-gray-500 uppercase">Total a Cobrar</p>
+                <p id="montoCobroModal" class="text-3xl font-black text-green-600 mt-1">$0.00</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <button type="button" onclick="seleccionarMetodoCobro('Efectivo')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-3 rounded-xl transition text-base shadow flex flex-col items-center gap-1">
-                    <span class="text-xl">💵</span> Efectivo
+            <div class="grid grid-cols-2 gap-3.5 mb-4">
+                <button type="button" onclick="seleccionarMetodoCobro('Efectivo')" class="bg-green-600 hover:bg-green-700 text-white font-black py-4 px-3 rounded-2xl transition text-base shadow flex flex-col items-center gap-1">
+                    <span class="text-2xl">💵</span> Efectivo
                 </button>
-                <button type="button" onclick="procesarVentaConMetodo('Transferencia')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-3 rounded-xl transition text-base shadow flex flex-col items-center gap-1">
-                    <span class="text-xl">📱</span> Transferencia
+                <button type="button" onclick="procesarVentaConMetodo('Transferencia')" class="bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-3 rounded-2xl transition text-base shadow flex flex-col items-center gap-1">
+                    <span class="text-2xl">📱</span> Transferencia
                 </button>
             </div>
 
-            <div id="seccionEfectivo" class="bg-arena-50 p-3 rounded-2xl border-2 border-arena-200 mb-4 hidden text-left space-y-2">
-                <label class="block text-xs font-bold text-gray-700">¿Con cuánto paga el cliente ($)?</label>
-                <input type="number" step="0.01" id="inputEfectivoRecibido" oninput="calcularCambio()" placeholder="0.00" class="w-full px-3 py-2 border-2 border-arena-200 rounded-xl font-bold text-base bg-white">
-                <div class="flex justify-between items-center pt-1 text-sm font-bold">
+            <div id="seccionEfectivo" class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 mb-4 hidden text-left space-y-2.5">
+                <label class="block text-sm font-black text-gray-800">¿Con cuánto paga el cliente ($)?</label>
+                <input type="number" step="0.01" id="inputEfectivoRecibido" oninput="calcularCambio()" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl font-black text-lg bg-white">
+                <div class="flex justify-between items-center pt-1 text-sm font-black">
                     <span class="text-gray-600">Cambio a devolver:</span>
-                    <span id="textoCambio" class="text-xl font-extrabold text-terracota-600">$0.00</span>
+                    <span id="textoCambio" class="text-2xl font-black text-terracota-600">$0.00</span>
                 </div>
-                <button type="button" onclick="procesarVentaConMetodo('Efectivo')" class="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-extrabold py-2.5 rounded-xl text-sm shadow">Confirmar Venta en Efectivo</button>
+                <button type="button" onclick="procesarVentaConMetodo('Efectivo')" class="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-black py-3.5 rounded-2xl text-base shadow">Confirmar Efectivo</button>
             </div>
 
-            <button type="button" onclick="cerrarModalCobro()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 px-4 rounded-xl transition text-sm">Cancelar</button>
+            <button type="button" onclick="cerrarModalCobro()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-3 px-4 rounded-2xl transition text-sm">Cancelar</button>
         </div>
     </div>
 
     <!-- Modal Escáner de Cámara QR -->
     <div id="modalScanner" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-2xl border-2 border-arena-200 text-center">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-extrabold text-gray-900">📷 Escanear Código QR</h3>
+                <h3 class="text-lg font-black text-gray-900">📷 Escanear Código QR</h3>
                 <button type="button" onclick="cerrarEscanerQR()" class="text-gray-400 hover:text-gray-700 text-2xl font-bold">✕</button>
             </div>
             <div id="reader" class="w-full rounded-2xl overflow-hidden border-2 border-arena-200 bg-black" style="min-height: 250px;"></div>
-            <p class="text-xs text-gray-500 mt-3 font-medium">Apunta la cámara del teléfono hacia el código QR impreso en la etiqueta.</p>
+            <p class="text-sm text-gray-600 mt-3 font-bold">Apunta la cámara hacia el código QR.</p>
         </div>
     </div>
 
     <!-- Modal Registrar Gastos -->
     <div id="modalGastos" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-arena-200">
+        <div class="bg-white rounded-3xl max-w-md w-full p-7 shadow-2xl border-2 border-arena-200">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-extrabold text-gray-900">Registrar Gasto o Flete</h3>
+                <h3 class="text-xl font-black text-gray-900">Registrar Gasto o Flete</h3>
                 <button type="button" onclick="cerrarModalGastos()" class="text-gray-400 hover:text-gray-700 text-2xl font-bold">✕</button>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Descripción (Ej. Palet #1, Gasolina)</label>
-                    <input type="text" id="gastoNombre" placeholder="Nombre del gasto" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <label class="block text-sm font-black text-gray-700 mb-1">Descripción</label>
+                    <input type="text" id="gastoNombre" placeholder="Ej. Palet #1, Gasolina" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl text-base font-bold bg-arena-50">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Gasto</label>
-                    <select id="gastoTipo" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium bg-white">
+                    <label class="block text-sm font-black text-gray-700 mb-1">Tipo de Gasto</label>
+                    <select id="gastoTipo" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl text-base font-bold bg-arena-50">
                         <option value="Palet">Precio Palet / Lote</option>
                         <option value="Flete">Flete / Transporte</option>
                         <option value="Gasolina">Gasolina / Extras</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Monto ($)</label>
-                    <input type="number" step="0.01" id="gastoMonto" placeholder="0.00" class="w-full px-4 py-3 border-2 border-arena-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracota-500 text-base font-medium">
+                    <label class="block text-sm font-black text-gray-700 mb-1">Monto ($)</label>
+                    <input type="number" step="0.01" id="gastoMonto" placeholder="0.00" class="w-full px-4 py-3.5 border-2 border-arena-200 rounded-2xl text-base font-bold bg-arena-50">
                 </div>
-                <div class="flex gap-3 pt-3">
-                    <button type="button" onclick="cerrarModalGastos()" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 px-4 rounded-xl transition text-base">Cancelar</button>
-                    <button type="button" onclick="agregarGasto()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md">Guardar</button>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="cerrarModalGastos()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-3.5 px-4 rounded-2xl transition text-base">Cancelar</button>
+                    <button type="button" onclick="agregarGasto()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-black py-3.5 px-4 rounded-2xl transition text-base shadow">Guardar</button>
                 </div>
             </div>
 
             <div class="mt-6 border-t-2 border-arena-200 pt-4">
-                <h4 class="text-sm font-extrabold text-gray-600 uppercase tracking-wider mb-2">Gastos Registrados</h4>
+                <h4 class="text-sm font-black text-gray-600 uppercase tracking-wider mb-2">Gastos Registrados</h4>
                 <div id="listaGastos" class="max-h-40 overflow-y-auto space-y-2 text-sm"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Corte y Reporte por Rango de Fechas con Desglose de Pagos -->
+    <!-- Modal Corte y Reporte por Fechas -->
     <div id="modalCorteCaja" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
-            <h3 class="text-xl font-extrabold text-gray-900 mb-1">📊 Corte y Reporte de Ventas</h3>
-            <p class="text-xs font-semibold text-gray-500 mb-4">Desglose de efectivo vs transferencia</p>
+        <div class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-xl font-black text-gray-900 mb-1">📊 Corte y Reporte de Ventas</h3>
+            <p class="text-sm font-bold text-gray-500 mb-4">Desglose de efectivo vs transferencia</p>
 
             <div class="space-y-3 mb-4 text-left">
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Fecha Inicial:</label>
-                    <input type="date" id="filtroFechaInicio" onchange="calcularReporteFechas()" class="w-full px-3 py-2 border-2 border-arena-200 rounded-xl font-bold text-sm bg-arena-50">
+                    <label class="block text-xs font-black text-gray-700 mb-1">Fecha Inicial:</label>
+                    <input type="date" id="filtroFechaInicio" onchange="calcularReporteFechas()" class="w-full px-3 py-2.5 border-2 border-arena-200 rounded-2xl font-bold text-sm bg-arena-50">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 mb-1">Fecha Final:</label>
-                    <input type="date" id="filtroFechaFin" onchange="calcularReporteFechas()" class="w-full px-3 py-2 border-2 border-arena-200 rounded-xl font-bold text-sm bg-arena-50">
+                    <label class="block text-xs font-black text-gray-700 mb-1">Fecha Final:</label>
+                    <input type="date" id="filtroFechaFin" onchange="calcularReporteFechas()" class="w-full px-3 py-2.5 border-2 border-arena-200 rounded-2xl font-bold text-sm bg-arena-50">
                 </div>
             </div>
             
             <div class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 text-left text-sm space-y-2.5 my-2">
                 <div class="flex justify-between font-bold">
                     <span class="text-gray-600">Piezas vendidas:</span>
-                    <span id="cortePiezas" class="text-gray-900">0</span>
+                    <span id="cortePiezas" class="text-gray-900 font-black">0</span>
                 </div>
                 <div class="flex justify-between font-bold">
                     <span class="text-gray-600">💵 En Efectivo (Caja):</span>
-                    <span id="corteEfectivo" class="text-green-700">$0.00</span>
+                    <span id="corteEfectivo" class="text-green-700 font-black">$0.00</span>
                 </div>
                 <div class="flex justify-between font-bold">
                     <span class="text-gray-600">📱 En Transferencia:</span>
-                    <span id="corteTransferencia" class="text-blue-700">$0.00</span>
+                    <span id="corteTransferencia" class="text-blue-700 font-black">$0.00</span>
                 </div>
-                <div class="border-t border-arena-200 pt-2 flex justify-between font-extrabold text-base">
+                <div class="border-t-2 border-arena-200 pt-2 flex justify-between font-black text-base">
                     <span class="text-gray-800">Total Ventas:</span>
                     <span id="corteVentas" class="text-terracota-600">$0.00</span>
                 </div>
             </div>
 
-            <button type="button" onclick="cerrarCorteCaja()" class="w-full mt-4 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3 px-4 rounded-xl transition text-base shadow-md">Cerrar</button>
+            <button type="button" onclick="cerrarCorteCaja()" class="w-full mt-4 bg-terracota-600 hover:bg-terracota-700 text-white font-black py-3 px-4 rounded-2xl transition text-base shadow">Cerrar</button>
         </div>
     </div>
 
     <!-- Modal Visualizador del Ticket -->
     <div id="modalTicket" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
-            <h3 class="text-xl font-extrabold text-gray-900 mb-2">Comprobante de Venta</h3>
+        <div class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-xl font-black text-gray-900 mb-2">Comprobante de Venta</h3>
             
             <div id="contenidoTicketVisual" class="bg-arena-50 p-4 rounded-2xl border-2 border-dashed border-arena-200 text-left font-mono text-sm space-y-2 my-4 max-h-60 overflow-y-auto"></div>
 
             <div class="flex gap-3 pt-2">
-                <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3 px-4 rounded-xl transition text-base shadow-md">🖨️ Imprimir</button>
-                <button type="button" onclick="cerrarModalTicket()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-xl transition text-base">Cerrar</button>
+                <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-black py-3 px-4 rounded-2xl transition text-base shadow">🖨️ Imprimir</button>
+                <button type="button" onclick="cerrarModalTicket()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-3 px-4 rounded-2xl transition text-base">Cerrar</button>
             </div>
         </div>
     </div>
 
     <!-- Modal Visualizador de Lote de Etiquetas -->
     <div id="modalEtiquetasLote" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-2 border-arena-200 text-center">
-            <h3 class="text-lg font-extrabold text-gray-900 mb-2">Etiquetas Seleccionadas</h3>
+        <div class="bg-white rounded-3xl max-w-lg w-full p-7 shadow-2xl border-2 border-arena-200 text-center">
+            <h3 class="text-lg font-black text-gray-900 mb-2">Etiquetas Seleccionadas</h3>
             
-            <div id="contenedorEtiquetasImpresion" class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 my-4 max-h-96 overflow-y-auto grid-etiquetas-print grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            <div id="contenedorEtiquetasImpresion" class="bg-arena-50 p-4 rounded-2xl border-2 border-arena-200 my-4 max-h-80 overflow-y-auto grid-etiquetas-print grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
 
             <div class="flex gap-3 pt-2">
-                <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3 px-4 rounded-xl transition text-base shadow-md">🖨️ Imprimir Todo</button>
-                <button type="button" onclick="cerrarModalEtiquetasLote()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-xl transition text-base">Cerrar</button>
+                <button type="button" onclick="window.print()" class="w-1/2 bg-terracota-600 hover:bg-terracota-700 text-white font-black py-3 px-4 rounded-2xl transition text-base shadow">🖨️ Imprimir Todo</button>
+                <button type="button" onclick="cerrarModalEtiquetasLote()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold py-3 px-4 rounded-2xl transition text-base">Cerrar</button>
             </div>
         </div>
     </div>
@@ -387,6 +380,7 @@
         let vistaActual = 'disponible';
         let html5QrcodeScanner = null;
         let carritoAbierto = false;
+        let debounceTimer = null;
 
         const $ = id => document.getElementById(id);
 
@@ -397,7 +391,7 @@
                 requestAnimationFrame(() => {
                     const prod = productos.find(p => p.id == itemId);
                     if (prod) {
-                        alert(`📱 Escaneado correctamente:\nCódigo: ${prod.codigo}\nArtículo: ${prod.nombre}\nPrecio: $${(prod.precioVenta || 0).toFixed(2)}`);
+                        alert(`📱 Artículo escaneado:\nCódigo: ${prod.codigo}\nNombre: ${prod.nombre}\nPrecio: $${(prod.precioVenta || 0).toFixed(2)}`);
                     }
                 });
             }
@@ -437,6 +431,7 @@
 
         function fijarCategoria(cat) {
             $('inputCategoria').value = cat;
+            $('inputCategoria').focus();
         }
 
         function abrirEscanerQR() {
@@ -532,17 +527,19 @@
         }
 
         function cambiarVista(vista) {
+            if (vistaActual === vista) return;
             vistaActual = vista;
             carritoIds = [];
             etiquetasSeleccionadasIds = [];
             carritoAbierto = false;
+            
             if (vista === 'disponible') {
-                $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
-                $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
+                $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-5 py-3 rounded-xl font-black transition bg-terracota-600 text-white shadow-sm";
+                $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-5 py-3 rounded-xl font-black transition text-gray-700 hover:text-black";
                 $('tituloSeccion').innerHTML = `<span>📋</span> Inventario Disponible`;
             } else {
-                $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition bg-terracota-600 text-white shadow-sm";
-                $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-4 py-2.5 rounded-lg font-bold transition text-gray-700 hover:text-black";
+                $('tabVendidos').className = "flex-1 sm:flex-none text-sm px-5 py-3 rounded-xl font-black transition bg-terracota-600 text-white shadow-sm";
+                $('tabDisponible').className = "flex-1 sm:flex-none text-sm px-5 py-3 rounded-xl font-black transition text-gray-700 hover:text-black";
                 $('tituloSeccion').innerHTML = `<span>✅</span> Artículos Vendidos`;
             }
             actualizarCarritoUI();
@@ -576,7 +573,7 @@
 
             let totalEfectivo = 0, totalTransferencia = 0, contador = 0;
 
-            for (let i = 0; i < productos.length; i++) {
+            for (let i = 0, len = productos.length; i < len; i++) {
                 const p = productos[i];
                 if (p.estado === 'Vendido' && p.fechaVenta) {
                     const partes = p.fechaVenta.split('/');
@@ -634,21 +631,21 @@
 
         function renderizarGastos() {
             if (gastos.length === 0) {
-                $('listaGastos').innerHTML = '<p class="text-gray-400 text-sm text-center py-2 font-medium">No hay gastos registrados.</p>';
+                $('listaGastos').innerHTML = '<p class="text-gray-400 text-sm text-center py-2 font-bold">No hay gastos registrados.</p>';
                 return;
             }
             let html = '';
-            for (let i = 0; i < gastos.length; i++) {
+            for (let i = 0, len = gastos.length; i < len; i++) {
                 const g = gastos[i];
                 html += `
-                    <div class="flex justify-between items-center bg-arena-50 p-3 rounded-xl border-2 border-arena-200 text-sm font-semibold">
+                    <div class="flex justify-between items-center bg-arena-50 p-3 rounded-xl border-2 border-arena-200 font-bold text-sm">
                         <div>
-                            <span class="font-extrabold text-gray-900">${g.nombre}</span>
+                            <span class="font-black text-gray-900">${g.nombre}</span>
                             <span class="text-terracota-600 block text-xs font-bold">(${g.tipo})</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="font-extrabold text-gray-800">$${(g.monto || 0).toFixed(2)}</span>
-                            <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-600 font-extrabold text-base px-2 py-1 bg-red-50 rounded-lg">✕</button>
+                            <span class="font-black text-gray-800">$${(g.monto || 0).toFixed(2)}</span>
+                            <button type="button" onclick="eliminarGasto(${g.id})" class="text-red-600 font-black px-2.5 py-1 bg-red-50 rounded-lg">✕</button>
                         </div>
                     </div>
                 `;
@@ -696,14 +693,14 @@
 
             let total = 0;
             let itemsHtml = '';
-            for (let i = 0; i < productos.length; i++) {
+            for (let i = 0, len = productos.length; i < len; i++) {
                 const p = productos[i];
                 if (carritoIds.includes(p.id)) {
                     total += (p.precioVenta || 0);
                     itemsHtml += `
-                        <div class="flex justify-between items-center bg-green-800 px-3 py-1.5 rounded-lg text-xs font-medium">
+                        <div class="flex justify-between items-center bg-green-800 px-3 py-1.5 rounded-xl font-bold">
                             <span><b>[${p.codigo}]</b> ${p.nombre}</span>
-                            <span class="font-bold text-green-200">$${(p.precioVenta || 0).toFixed(2)}</span>
+                            <span class="font-black text-green-200">$${(p.precioVenta || 0).toFixed(2)}</span>
                         </div>
                     `;
                 }
@@ -725,7 +722,7 @@
         function abrirModalCobro() {
             if (carritoIds.length === 0) return;
             let total = 0;
-            for (let i = 0; i < productos.length; i++) {
+            for (let i = 0, len = productos.length; i < len; i++) {
                 if (carritoIds.includes(productos[i].id)) total += (productos[i].precioVenta || 0);
             }
             $('montoCobroModal').textContent = `$${total.toFixed(2)}`;
@@ -750,7 +747,7 @@
 
         function calcularCambio() {
             let total = 0;
-            for (let i = 0; i < productos.length; i++) {
+            for (let i = 0, len = productos.length; i < len; i++) {
                 if (carritoIds.includes(productos[i].id)) total += (productos[i].precioVenta || 0);
             }
             const recibido = parseFloat($('inputEfectivoRecibido').value) || 0;
@@ -758,10 +755,10 @@
 
             if (cambio >= 0) {
                 $('textoCambio').textContent = `$${cambio.toFixed(2)}`;
-                $('textoCambio').className = "text-xl font-extrabold text-green-600";
+                $('textoCambio').className = "text-2xl font-black text-green-600";
             } else {
                 $('textoCambio').textContent = `Faltan $${Math.abs(cambio).toFixed(2)}`;
-                $('textoCambio').className = "text-xl font-extrabold text-red-600";
+                $('textoCambio').className = "text-2xl font-black text-red-600";
             }
         }
 
@@ -774,7 +771,7 @@
             let itemsVendidos = [];
             let totalVenta = 0;
 
-            for (let i = 0; i < productos.length; i++) {
+            for (let i = 0, len = productos.length; i < len; i++) {
                 if (carritoIds.includes(productos[i].id)) {
                     productos[i].estado = 'Vendido';
                     productos[i].fechaVenta = hoy;
@@ -824,7 +821,7 @@
                 <div style="border-top: 1px dashed #5a5344; margin: 6px 0;"></div>
             `;
 
-            for (let i = 0; i < items.length; i++) {
+            for (let i = 0, len = items.length; i < len; i++) {
                 const item = items[i];
                 detalleHtml += `<div><b>[${item.codigo}]</b> ${item.nombre}<br><span style="float: right;">$${(item.precioVenta || 0).toFixed(2)}</span></div><div style="clear:both; margin-bottom: 4px;"></div>`;
             }
@@ -868,30 +865,30 @@
             contenedor.innerHTML = '';
             const urlBase = window.location.href.split('?')[0];
 
-            for (let i = 0; i < etiquetasSeleccionadasIds.length; i++) {
+            for (let i = 0, len = etiquetasSeleccionadasIds.length; i < len; i++) {
                 const p = productos.find(item => item.id == etiquetasSeleccionadasIds[i]);
                 if (!p) continue;
 
                 const etiquetaDiv = document.createElement('div');
-                etiquetaDiv.className = "bg-white p-3 rounded-2xl border-2 border-arena-800 text-center space-y-1 my-2 inline-block shadow-sm";
+                etiquetaDiv.className = "bg-white p-3 rounded-2xl border-2 border-arena-800 text-center space-y-1 inline-block shadow-sm";
                 etiquetaDiv.style.width = "220px";
                 etiquetaDiv.style.margin = "5px";
 
                 etiquetaDiv.innerHTML = `
                     <div style="font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #b0573b; border-bottom: 1px solid #e6dfd1; padding-bottom: 2px;">TU BAZAR CULIACÁN</div>
                     <div style="margin-top: 4px;">
-                        <span style="font-size: 9px; color: #6b7280; text-transform: uppercase; font-weight: bold; display: block;">Código de artículo:</span>
+                        <span style="font-size: 9px; color: #6b7280; text-transform: uppercase; font-weight: bold; display: block;">Código:</span>
                         <span style="font-weight: 900; font-size: 13px; background: #f4f1ea; padding: 1px 6px; border-radius: 4px; display: inline-block;">${p.codigo || 'S/C'}</span>
                     </div>
                     <div style="font-weight: 800; font-size: 12px; color: #2d2a22; line-height: 1.1; padding: 2px 0;">${p.nombre || 'Artículo'}</div>
                     <div style="background: #fdf8f6; border: 1px solid #fbe8e4; padding: 4px; border-radius: 6px; margin: 3px 0; display: flex; justify-content: space-around; align-items: center;">
                         <div>
-                            <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; font-weight: bold;">Precio Tienda</div>
+                            <div style="font-size: 8px; color: #6b7280; text-transform: uppercase; font-weight: bold;">Costo</div>
                             <div style="font-weight: 800; font-size: 12px; color: #9ca3af; text-decoration: line-through;">$${(p.costo || 0).toFixed(2)}</div>
                         </div>
                         <div style="border-left: 1px solid #e6dfd1; height: 20px;"></div>
                         <div>
-                            <div style="font-size: 8px; color: #b0573b; text-transform: uppercase; font-weight: 900;">Precio Bazar</div>
+                            <div style="font-size: 8px; color: #b0573b; text-transform: uppercase; font-weight: 900;">Precio</div>
                             <div style="font-weight: 900; font-size: 15px; color: #16a34a; line-height: 1;">$${(p.precioVenta || 0).toFixed(2)}</div>
                         </div>
                     </div>
@@ -968,7 +965,7 @@
             $('editandoId').value = p.id;
             $('formTitulo').innerHTML = `<span>✏️</span> Editando Artículo: <span class="text-terracota-600">${p.codigo || ''}</span>`;
             $('btnGuardar').textContent = "Actualizar Artículo";
-            $('btnGuardar').className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md";
+            $('btnGuardar').className = "w-2/3 bg-green-600 hover:bg-green-700 text-white font-black py-4 px-4 rounded-2xl transition text-base shadow-lg";
             $('btnCancelarEdicion').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -977,9 +974,9 @@
             limpiarFormulario();
             sugerirSiguienteCodigo();
             $('editandoId').value = "";
-            $('formTitulo').innerHTML = `<span>📦</span> Agregar Artículo al Inventario`;
+            $('formTitulo').innerHTML = `<span>📦</span> Nuevo Artículo en el Inventario`;
             $('btnGuardar').textContent = "Guardar Artículo";
-            $('btnGuardar').className = "w-full bg-terracota-600 hover:bg-terracota-700 text-white font-bold py-3.5 px-4 rounded-xl transition text-base shadow-md";
+            $('btnGuardar').className = "w-full bg-terracota-600 hover:bg-terracota-700 text-white font-black py-4 px-4 rounded-2xl transition text-lg shadow-lg";
             $('btnCancelarEdicion').classList.add('hidden');
         }
 
@@ -1031,8 +1028,8 @@
 
         function actualizarFinanzas() {
             let inversion = 0, ingresos = 0;
-            for (let i = 0; i < gastos.length; i++) inversion += (gastos[i].monto || 0);
-            for (let i = 0; i < productos.length; i++) {
+            for (let i = 0, len = gastos.length; i < len; i++) inversion += (gastos[i].monto || 0);
+            for (let i = 0, len = productos.length; i < len; i++) {
                 if (productos[i].estado === 'Vendido') ingresos += (productos[i].precioVenta || 0);
             }
             const ganancia = ingresos - inversion;
@@ -1040,7 +1037,14 @@
             $('totalInversion').textContent = `$${inversion.toFixed(2)}`;
             $('totalIngresos').textContent = `$${ingresos.toFixed(2)}`;
             $('totalGanancias').textContent = `$${ganancia.toFixed(2)}`;
-            $('totalGanancias').className = `text-2xl font-extrabold mt-2 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
+            $('totalGanancias').className = `text-3xl font-black mt-1 ${ganancia >= 0 ? 'text-green-600' : 'text-red-600'}`;
+        }
+
+        function renderizarOptimizado() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                renderizar();
+            }, 100);
         }
 
         function renderizar() {
@@ -1052,11 +1056,11 @@
             requestAnimationFrame(() => {
                 if (vistaActual === 'disponible') {
                     $('tableHeader').innerHTML = `
-                        <th class="py-3 px-2 w-10 text-center">✓</th>
+                        <th class="py-3 px-3 w-12 text-center">✓</th>
                         <th class="py-3 px-3">Código</th>
                         <th class="py-3 px-3">Artículo</th>
                         <th class="py-3 px-3">Cat.</th>
-                        <th class="py-3 px-3">Costo de Tienda</th>
+                        <th class="py-3 px-3">Costo</th>
                         <th class="py-3 px-3">Precio</th>
                         <th class="py-3 px-3 text-right">Acciones</th>
                     `;
@@ -1075,27 +1079,27 @@
                     } else {
                         $('emptyState').classList.add('hidden');
                         let html = '';
-                        for (let i = 0; i < lista.length; i++) {
+                        for (let i = 0, len = lista.length; i < len; i++) {
                             const p = lista[i];
                             const seleccionadoCarrito = carritoIds.includes(p.id);
                             const seleccionadoEtiqueta = etiquetasSeleccionadasIds.includes(p.id);
                             html += `
-                                <tr class="hover:bg-arena-50 transition ${seleccionadoCarrito ? 'bg-green-50/60' : ''}">
-                                    <td class="py-4 px-2 text-center">
-                                        <input type="checkbox" onclick="toggleSeleccionEtiqueta(${p.id})" ${seleccionadoEtiqueta ? 'checked' : ''} class="w-5 h-5 accent-terracota-600 cursor-pointer">
+                                <tr class="hover:bg-arena-50 transition ${seleccionadoCarrito ? 'bg-green-50/80' : ''}">
+                                    <td class="py-4 px-3 text-center">
+                                        <input type="checkbox" onclick="toggleSeleccionEtiqueta(${p.id})" ${seleccionadoEtiqueta ? 'checked' : ''} class="w-5 h-5 accent-terracota-600 cursor-pointer rounded">
                                     </td>
-                                    <td class="py-4 px-3 font-extrabold text-terracota-700 text-base">${p.codigo || ''}</td>
+                                    <td class="py-4 px-3 font-black text-terracota-700 text-base">${p.codigo || ''}</td>
                                     <td class="py-4 px-3 font-bold text-gray-900 text-base">${p.nombre || ''}</td>
-                                    <td class="py-4 px-3 text-gray-700 font-semibold text-sm">${p.categoria || 'General'}</td>
-                                    <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.costo || 0).toFixed(2)}</td>
-                                    <td class="py-4 px-3 text-gray-700 font-semibold text-sm">$${(p.precioVenta || 0).toFixed(2)}</td>
+                                    <td class="py-4 px-3 text-gray-700 font-bold text-sm">${p.categoria || 'General'}</td>
+                                    <td class="py-4 px-3 text-gray-600 font-bold text-sm">$${(p.costo || 0).toFixed(2)}</td>
+                                    <td class="py-4 px-3 text-gray-900 font-black text-base">$${(p.precioVenta || 0).toFixed(2)}</td>
                                     <td class="py-4 px-3 text-right">
-                                        <div class="inline-flex items-center gap-1.5 justify-end">
-                                            <button type="button" onclick="toggleCarrito(${p.id})" class="text-sm ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-500 hover:bg-green-600'} text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">
+                                        <div class="inline-flex items-center gap-2 justify-end">
+                                            <button type="button" onclick="toggleCarrito(${p.id})" class="text-xs ${seleccionadoCarrito ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white font-black px-4 py-2 rounded-xl shadow-sm transition">
                                                 ${seleccionadoCarrito ? '✓ Venta' : '🛒 Venta'}
                                             </button>
-                                            <button type="button" onclick="prepararEdicion(${p.id})" class="text-sm bg-blue-500 hover:bg-blue-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Editar</button>
-                                            <button type="button" onclick="eliminarProducto(${p.id})" class="text-sm bg-red-500 hover:bg-red-600 text-white font-extrabold px-3.5 py-2 rounded-xl shadow-sm">Borrar</button>
+                                            <button type="button" onclick="prepararEdicion(${p.id})" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-2 rounded-xl shadow-sm transition">Editar</button>
+                                            <button type="button" onclick="eliminarProducto(${p.id})" class="text-xs bg-red-500 hover:bg-red-600 text-white font-black px-4 py-2 rounded-xl shadow-sm transition">Borrar</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -1114,7 +1118,7 @@
                     const vendidos = productos.filter(p => p.estado === 'Vendido');
                     let gruposMap = {};
                     
-                    for (let i = 0; i < vendidos.length; i++) {
+                    for (let i = 0, len = vendidos.length; i < len; i++) {
                         const p = vendidos[i];
                         let key = p.ventaId || ('single_' + p.id);
                         if (!gruposMap[key]) {
@@ -1137,27 +1141,27 @@
                     } else {
                         $('emptyState').classList.add('hidden');
                         let html = '';
-                        for (let i = 0; i < gruposArray.length; i++) {
+                        for (let i = 0, len = gruposArray.length; i < len; i++) {
                             const g = gruposArray[i];
-                            let badgeMetodo = g.metodo === 'Transferencia' ? '<span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-extrabold">Transferencia</span>' : '<span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-extrabold">Efectivo</span>';
-                            let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-bold">($${(i.precioVenta || 0).toFixed(2)})</span>`).join('<br>');
-                            let btnAccionTicket = g.ventaId ? `<button type="button" onclick="mostrarTicketPorVenta('${g.ventaId}')" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>` : `<button type="button" onclick="mostrarTicketPorVentaSingle(${g.singleId})" class="bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
-                            let botonesDevolucion = g.items.map(i => `<button type="button" onclick="cambiarEstadoIndividual(${i.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg shadow-sm">↩️ Devolver [${i.codigo}]</button>`).join(' ');
+                            let badgeMetodo = g.metodo === 'Transferencia' ? '<span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-black">Transferencia</span>' : '<span class="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-black">Efectivo</span>';
+                            let listaNombres = g.items.map(i => `<b>[${i.codigo}]</b> ${i.nombre} <span class="text-green-700 font-black">($${(i.precioVenta || 0).toFixed(2)})</span>`).join('<br>');
+                            let btnAccionTicket = g.ventaId ? `<button type="button" onclick="mostrarTicketPorVenta('${g.ventaId}')" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>` : `<button type="button" onclick="mostrarTicketPorVentaSingle(${g.singleId})" class="bg-purple-600 hover:bg-purple-700 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1">👁️ Ver Ticket</button>`;
+                            let botonesDevolucion = g.items.map(i => `<button type="button" onclick="cambiarEstadoIndividual(${i.id})" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm">↩️ Devolver [${i.codigo}]</button>`).join(' ');
 
                             html += `
-                                <tr class="hover:bg-arena-50 transition border-b border-arena-200">
-                                    <td class="py-4 px-3 font-extrabold text-terracota-700 text-base align-top">
+                                <tr class="hover:bg-arena-50 transition border-b-2 border-arena-200">
+                                    <td class="py-4 px-3 font-black text-terracota-700 text-base align-top">
                                         ${g.fecha}<br>${badgeMetodo}
                                     </td>
                                     <td class="py-4 px-3 text-gray-900 text-sm align-top space-y-1.5">${listaNombres}</td>
-                                    <td class="py-4 px-3 font-extrabold text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
+                                    <td class="py-4 px-3 font-black text-green-700 text-base align-top">$${g.total.toFixed(2)}</td>
                                     <td class="py-4 px-3 text-right align-top">
                                         <div class="flex flex-col items-end gap-2.5">
                                             <div class="flex items-center gap-2">
                                                 ${btnAccionTicket}
-                                                <button type="button" onclick="eliminarProducto(${g.items[0].id})" class="bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm px-3.5 py-2 rounded-xl shadow-sm">🗑️ Borrar</button>
+                                                <button type="button" onclick="eliminarProducto(${g.items[0].id})" class="bg-red-500 hover:bg-red-600 text-white font-black text-xs px-3.5 py-2 rounded-xl shadow-sm">🗑️ Borrar</button>
                                             </div>
-                                            <div class="flex flex-wrap gap-1.5 justify-end pt-1 border-t border-arena-100 w-full">
+                                            <div class="flex flex-wrap gap-1.5 justify-end pt-1 border-t border-arena-200 w-full">
                                                 ${botonesDevolucion}
                                             </div>
                                         </div>
